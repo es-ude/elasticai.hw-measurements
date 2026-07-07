@@ -7,13 +7,19 @@ module TOP_MODULE#(
     input wire          CLK_SYS_EXT,
     input wire          RSTN,
     // --- General purpose I/O
-    output wire [3:0]   LED,
+    output wire         LED,
+    output wire         FPGA_GPIO,
     output wire         FPGA_BUSY,
-    // --- UART Communication
+    output wire  [7:0]  PMOD,
+    input wire          TRGG_EXT,
+    // --- SPI Communication
     output wire         SPI_MISO,
     input wire          SPI_MOSI,
     input wire          SPI_SCLK,
-    input wire          SPI_CSN
+    input wire          SPI_CSN,
+    // --- I2C Communication
+    //input wire          I2C_SCL,
+    //input wire          I2C_SDA,
 );
 
 	localparam SPI_BITWIDTH = TEST_ENV_CMDS_BITWIDTH + TEST_ENV_ADR_WIDTH + TEST_ENV_DATA_BITWIDTH;
@@ -48,7 +54,8 @@ module TOP_MODULE#(
 
     //Interface for Debugging modules
     assign FPGA_BUSY = ~dut_rdy;
-    assign LED[3:1] = {spi_mod_rdy, dut_rdy, SPI_CSN};
+    assign FPGA_GPIO = LED;
+    assign PMOD = 8'b10101010;
 
     //##########################################################
     //UNTER-MODULE: DEVICE UNDER TEST
@@ -102,7 +109,7 @@ module TOP_MODULE#(
         .FIFO_RDY(spi_mod_rdy),
         .FIFO_DIN(data_spi_to_mid),
         .FIFO_DOUT(data_mid_to_spi),
-        .LED_CONTROL(LED[0]),
+        .LED_CONTROL(LED),
         .DUT_DO_TEST(dut_start_flag),
         .DUT_SEL(dut_sel),
         .DUT_DIN(dut_din),

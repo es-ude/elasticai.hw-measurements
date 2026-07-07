@@ -54,18 +54,31 @@
 #   default_GPIO | DRIVE=3; # sets all output strengths to 3mA, unless overwritten
 #
 # --- Global Clock and Reset
-set_io CLK_SYS_EXT      20
+set_io CLK_SYS_EXT      9
 set_io RSTN             10
 
 # --- General Purpose I/O
-set_io LED[0]           6
-set_io LED[1]           4
-set_io LED[2]           3
-set_io LED[3]           2
+set_io LED              48
+set_io FPGA_GPIO        11
 set_io FPGA_BUSY        12
+set_io TRGG_EXT         45
+
+# --- PMOD Header
+set_io PMOD[0]          37
+set_io PMOD[1]          38
+set_io PMOD[2]          39
+set_io PMOD[3]          40
+set_io PMOD[4]          41
+set_io PMOD[5]          42
+set_io PMOD[6]          44
+set_io PMOD[7]          43
 
 # --- SPI Interface from MCU
-set_io SPI_MISO         19
+set_io SPI_MISO         21
 set_io SPI_MOSI         18
-set_io SPI_SCLK         21
-set_io SPI_CSN          9
+set_io SPI_SCLK         19
+set_io SPI_CSN          20
+
+# --- I2C Interface from MCU
+set_io I2C_SDA          36
+set_io I2C_SCL          35

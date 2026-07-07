@@ -12,7 +12,6 @@
 **/.venv
 **/venv
 **/*.log
-**/*.yaml
 *coverage*
 .python-version
 elasticai/__init__.py
@@ -24,5 +23,4 @@ elasticai/__init__.py
 **/.envrc
 designs
 scripts
-fpga.nix
-Makefile
+

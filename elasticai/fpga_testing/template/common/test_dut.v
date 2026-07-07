@@ -63,6 +63,8 @@ module TEST_ENVIRONMENT#(
         .CLK_SYS(CLK),
         .RSTN(RSTN),
 		.EN(SEL == 'd2),
+		.RnW(RnW),
+		.ADR(ADR),
 		.TRGG_START_CALC(START_FLAG),
 		.DATA_IN(DATA_IN),
 		.DATA_OUT(dout[2]),

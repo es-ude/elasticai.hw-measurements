@@ -8,7 +8,7 @@ module TOP_MODULE#(
     input wire          CLK_100MHz,
     input wire          RSTN,
     // --- General purpose I/O
-    output wire [3:0]   LED,
+    output wire         LED,
     output wire         FPGA_BUSY,
     // --- UART Communication
     output wire         SPI_MISO,
@@ -32,7 +32,6 @@ module TOP_MODULE#(
     
     //Interface for Debugging modules  
     assign FPGA_BUSY = ~dut_rdy;
-    assign LED[3:1] = {spi_mod_rdy, dut_rdy, SPI_CSN};
     
     //##########################################################
     //UNTER-MODULE: DEVICE UNDER TEST    
@@ -86,7 +85,7 @@ module TOP_MODULE#(
         .FIFO_RDY(spi_mod_rdy),
         .FIFO_DIN(data_spi_to_mid),
         .FIFO_DOUT(data_mid_to_spi),
-        .LED_CONTROL(LED[0]),
+        .LED_CONTROL(LED),
         .DUT_DO_TEST(dut_start_flag),
         .DUT_SEL(dut_sel),
         .DUT_DIN(dut_din),

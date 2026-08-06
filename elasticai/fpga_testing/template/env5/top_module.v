@@ -1,8 +1,8 @@
 module TOP_MODULE#(
-    parameter NUM_DUT = 2,
-    parameter TEST_ENV_CMDS_BITWIDTH = 2,
-    parameter TEST_ENV_ADR_WIDTH = 6,
-    parameter TEST_ENV_DATA_BITWIDTH = 16
+    parameter integer NUM_DUT = 2,
+    parameter integer TEST_ENV_CMDS_BITWIDTH = 2,
+    parameter integer TEST_ENV_ADR_WIDTH = 6,
+    parameter integer TEST_ENV_DATA_BITWIDTH = 16
 )(
     // --- Global signals
     input wire          CLK_100MHz,
@@ -31,7 +31,7 @@ module TOP_MODULE#(
     wire [TEST_HEAD_BITWIDTH-'d1:0] dut_header;
     
     //Interface for Debugging modules  
-    assign FPGA_BUSY = ~dut_rdy;
+    assign FPGA_BUSY = !dut_rdy;
     
     //##########################################################
     //UNTER-MODULE: DEVICE UNDER TEST    

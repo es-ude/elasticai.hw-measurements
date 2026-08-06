@@ -34,7 +34,7 @@ module TOP_MODULE(
     // --- Implementing user logic
     reg [20:0] counter;
     always@(posedge clk0)	begin
-        if (~RSTN) begin
+        if (!RSTN) begin
             counter <= 0;
         end else begin
             counter <= counter + 'd1;

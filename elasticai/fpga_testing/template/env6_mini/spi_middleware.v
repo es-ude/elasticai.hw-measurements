@@ -28,12 +28,12 @@
 // ------------------------------- DATA FRAME -----------------------------------------------------------------------
 
 module SPI_MIDDLEWARE#(
-    parameter NUM_DUT = 5,
-    parameter BITWIDTH = 24,
-    parameter BITWIDTH_CMDS = 2,
-    parameter BITWIDTH_ADR = 6,
-    parameter BITWIDTH_DATA = 16,
-    parameter BITWIDTH_HEAD = 32
+    parameter integer NUM_DUT = 5,
+    parameter integer BITWIDTH = 24,
+    parameter integer BITWIDTH_CMDS = 2,
+    parameter integer BITWIDTH_ADR = 6,
+    parameter integer BITWIDTH_DATA = 16,
+    parameter integer BITWIDTH_HEAD = 32
 )(
     // Global signals
     input wire                              CLK_SYS,

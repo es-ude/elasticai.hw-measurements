@@ -20,12 +20,12 @@
 
 
 module SKELETON_MATH#(
-    parameter BITWIDTH_IN = 5'd8,
-    parameter BITWIDTH_SYS = 5'd16,
-    parameter BITWIDTH_HEAD = 6'd26,
-    parameter BITWIDTH_ADR = 6'd6,
-    parameter NUM_PARAMS = 6'd16,
-    parameter NUM_MULT = 6'd1
+    parameter integer BITWIDTH_IN = 5'd8,
+    parameter integer BITWIDTH_SYS = 5'd16,
+    parameter integer BITWIDTH_HEAD = 6'd26,
+    parameter integer BITWIDTH_ADR = 6'd6,
+    parameter integer NUM_PARAMS = 6'd16,
+    parameter integer NUM_MULT = 6'd1
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -76,7 +76,7 @@ end
 // --- Testing routine
 integer i0;
 always@(posedge CLK_SYS) begin
-    if(~(RSTN && EN)) begin
+    if(!(RSTN && EN)) begin
         run_test <= 1'd0;
         cnt_mult_wait <= 'd0;
         pipe_dut_out <= 'd0;
@@ -85,7 +85,7 @@ always@(posedge CLK_SYS) begin
         end
     end else begin
         // --- Loading data to internal RAM
-        data_dut[ADR] <= (~RnW) ? DATA_IN[(BITWIDTH_SYS-'d1)-:BITWIDTH_IN] : data_dut[ADR];
+        data_dut[ADR] <= (!RnW) ? DATA_IN[(BITWIDTH_SYS-'d1)-:BITWIDTH_IN] : data_dut[ADR];
 
         // --- Pipelining Multiplier Input (1-Delay Stage)
         if(run_test && |DATA_IN[0+:(BITWIDTH_SYS-BITWIDTH_IN)]) begin

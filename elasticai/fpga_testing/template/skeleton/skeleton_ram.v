@@ -20,10 +20,10 @@
 
 
 module SKELETON_RAM#(
-    parameter BITWIDTH_IN = 5'd12,
-    parameter BITWIDTH_SYS = 5'd16,
-    parameter BITWIDTH_HEAD = 6'd26,
-	parameter BITWIDTH_ADR = 6'd6
+    parameter integer BITWIDTH_IN = 5'd12,
+    parameter integer BITWIDTH_SYS = 5'd16,
+    parameter integer BITWIDTH_HEAD = 6'd26,
+	parameter integer BITWIDTH_ADR = 6'd6
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -43,8 +43,8 @@ assign DATA_HEAD = {4'd3, NUM_POSITIONS[5:0], NUM_POSITIONS[5:0], BITWIDTH_IN[4:
 
 wire en_module, we_module;
 wire [BITWIDTH_IN-'d1:0] ram_din, ram_dout;
-assign en_module = EN && RSTN && ~TRGG_START_CALC;
-assign we_module = ~RnW;
+assign en_module = EN && RSTN && !TRGG_START_CALC;
+assign we_module = !RnW;
 assign ram_din = DATA_IN[(BITWIDTH_SYS-'d1)-:BITWIDTH_IN];
 assign DATA_OUT = {ram_dout, {BITWIDTH_OFFSET{1'd0}}};
 assign RDY = 1'd1;

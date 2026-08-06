@@ -19,9 +19,9 @@
 
 
 module SKELETON_FILT#(
-    parameter BITWIDTH_IN = 5'd16,
-    parameter BITWIDTH_SYS = 5'd16,
-    parameter BITWIDTH_HEAD = 6'd26
+    parameter integer BITWIDTH_IN = 5'd16,
+    parameter integer BITWIDTH_SYS = 5'd16,
+    parameter integer BITWIDTH_HEAD = 6'd26
 )(
     input wire CLK_SYS,
     input wire RSTN,

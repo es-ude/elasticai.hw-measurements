@@ -20,10 +20,10 @@
 
 
 module SPI_SLAVE_WCLK#(
-    parameter BITWIDTH = 6'd20,
-    parameter CPOL = 1'b0,
-    parameter CPHA = 1'b0,
-    parameter MSB = 1'd1
+    parameter integer BITWIDTH = 6'd20,
+    parameter integer CPOL = 1'b0,
+    parameter integer CPHA = 1'b0,
+    parameter integer MSB = 1'd1
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -68,7 +68,7 @@ always@(posedge CLK_SYS) begin
 		
 		case(state)
 		STATE_IDLE: begin
-			if(~CSN) begin
+			if(!CSN) begin
 				state <= STATE_SAMPLE;
 				buffer <= DFROM_MIDDLEWARE;
 				miso_bit <= (MSB) ? DFROM_MIDDLEWARE[BITWIDTH-'d1] : DFROM_MIDDLEWARE[0];

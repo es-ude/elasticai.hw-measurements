@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module SKELETON_ECHO#(
-    parameter BITWIDTH_SYS = 16,
-    parameter BITWIDTH_HEAD = 26
+    parameter integer BITWIDTH_SYS = 16,
+    parameter integer BITWIDTH_HEAD = 26
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -36,7 +36,7 @@ module SKELETON_ECHO#(
 
     // --- Control lines
     always@(posedge CLK_SYS) begin
-        if(~(RSTN && EN)) begin
+        if(!(RSTN && EN)) begin
             first_run_done <= 1'd0;
             DATA_OUT <= 'd0;
         end else begin

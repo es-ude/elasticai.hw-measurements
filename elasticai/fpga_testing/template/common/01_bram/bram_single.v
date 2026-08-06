@@ -20,8 +20,8 @@
 
 
 module BRAM_SINGLE#(
-    parameter BITWIDTH = 12,
-    parameter RAMWIDTH = 16,
+    parameter integer BITWIDTH = 12,
+    parameter integer RAMWIDTH = 16,
     parameter DATAFILE = "bram_preload.mem"
 )(
     input wire CLK_RAM,

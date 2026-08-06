@@ -23,9 +23,9 @@
 
 
 module UART_COM#(
-    parameter BITRATE = 'd26,
-    parameter BITWIDTH = 'd8,
-    parameter NSAMP = 'd4
+    parameter integer BITRATE = 'd26,
+    parameter integer BITWIDTH = 'd8,
+    parameter integer NSAMP = 'd4
 )(
     input wire CLK_SYS,
     input wire RSTN,

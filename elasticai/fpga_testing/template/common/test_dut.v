@@ -1,9 +1,9 @@
 module TEST_ENVIRONMENT#(
-    parameter BITWIDTH_DATA = 16,
-    parameter BITWIDTH_ADR = 6,
-    parameter NUM_DUT = 2,
-    parameter NUM_BITS_HEADER = 32,
-    parameter UINT_DATATYPE = 1
+    parameter integer BITWIDTH_DATA = 16,
+    parameter integer BITWIDTH_ADR = 6,
+    parameter integer NUM_DUT = 2,
+    parameter integer NUM_BITS_HEADER = 32,
+    parameter integer UINT_DATATYPE = 1
 )(
     input wire CLK,
     input wire RSTN,

@@ -20,10 +20,10 @@
 
 
 module SKELETON_DNN#(
-	parameter BITWIDTH_IN = 5'd8,
-    parameter BITWIDTH_SYS = 5'd16,
-    parameter BITWIDTH_HEAD = 6'd26,
-	parameter ADR_WIDTH = 6'd6
+	parameter integer BITWIDTH_IN = 5'd8,
+    parameter integer BITWIDTH_SYS = 5'd16,
+    parameter integer BITWIDTH_HEAD = 6'd26,
+	parameter integer ADR_WIDTH = 6'd6
 )(
     input wire CLK,
     input wire RSTN,
@@ -48,11 +48,11 @@ assign DATA_OUT[0+:BITWIDTH_OFFSET] = 'd0;
 skeleton LinearDesign(
     .clock(CLK),
     .clk_hadamard(CLK),
-    .reset(~(RSTN && EN)),
+    .reset(!(RSTN && EN)),
     .busy(DATA_VALID),
     .wake_up(),
     .rd(RnW),
-    .wr(~RnW),
+    .wr(!RnW),
     .data_in(DATA_IN[BITWIDTH_OFFSET+:BITWIDTH_IN]),
     .address_in({{('d16-ADR_WIDTH){1'd0}}, ADR}),    
     .data_out(DATA_OUT[BITWIDTH_OFFSET+:BITWIDTH_IN]),

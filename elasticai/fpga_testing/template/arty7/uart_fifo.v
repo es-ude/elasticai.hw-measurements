@@ -18,8 +18,8 @@
 
 
 module UART_FIFO#(
-    parameter FIFO_SIZE = 'd4,
-    parameter BITWIDTH = 'd8
+    parameter integer FIFO_SIZE = 'd4,
+    parameter integer BITWIDTH = 'd8
 )(
     input wire CLK_SYS,
     input wire RSTN,

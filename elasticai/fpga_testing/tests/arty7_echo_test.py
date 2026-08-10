@@ -105,7 +105,6 @@ async def top_module(dut):
 def test_echo_template() -> None:
     cocotb_settings = deepcopy(cocotb_settings_arty7)
     cocotb_settings["cocotb_test_module"] = "elasticai.fpga_testing.tests.arty7_echo_test"
-
     run_cocotb_sim_for_src_dir(**cocotb_settings)
 
 

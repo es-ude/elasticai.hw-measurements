@@ -125,10 +125,7 @@ exclude = [
 ]
 
 [tool.pytest]
-markers = [
-  "hardware: slow running system tests using real hardware",
-  "simulation: a slow simulation test"
-]
+markers = ["hardware: slow running system tests using real hardware", "simulation: a slow simulation test"]
 minversion = "9.0"
 norecursedirs = []
 python_files = ["*_test.py"]

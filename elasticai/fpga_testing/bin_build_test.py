@@ -17,7 +17,7 @@ from .bin_build import (
 class TestBitStreamTranslator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.path_to_template = Path(get_path_to_project("artefact")) / "env5"
+        cls.path_to_template = Path(get_path_to_project("artefact")) / "env5_s15"
         cls.path_to_temp = Path(get_path_to_project("temp_build"))
         if cls.path_to_temp.exists():
             rmtree(cls.path_to_temp)
@@ -25,7 +25,6 @@ class TestBitStreamTranslator(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # rmtree(cls.path_to_temp)
         pass
 
     def test_write_bin_file_with_header_absolute(self):

@@ -43,52 +43,52 @@ async def top_module(dut):
         data_get_list[idx + 1] = data
 
     # Initial definition
-    dut.CLK_100MHz.value = 0
+    dut.CLK_SYS.value = 0
     dut.RSTN.value = 0
     dut.UART_RX.value = 1
 
     # Start clock and making reset
-    cocotb.start_soon(Clock(dut.CLK_100MHz, period_clk, unit="ns").start())
+    cocotb.start_soon(Clock(dut.CLK_SYS, period_clk, unit="ns").start())
     for _ in range(8):
-        await RisingEdge(dut.CLK_100MHz)
+        await RisingEdge(dut.CLK_SYS)
     for idx in range(4):
-        await RisingEdge(dut.CLK_100MHz)
+        await RisingEdge(dut.CLK_SYS)
         dut.RSTN.value = idx % 2
-        await RisingEdge(dut.CLK_100MHz)
+        await RisingEdge(dut.CLK_SYS)
     dut.RSTN.value = 1
     for _ in range(2):
-        await RisingEdge(dut.CLK_100MHz)
+        await RisingEdge(dut.CLK_SYS)
 
     # make UART package transmission
     for data_send, data_get in zip(data_send_list, data_get_list):
         # Idle time
         for _ in range(baudrate):
-            await RisingEdge(dut.CLK_100MHz)
+            await RisingEdge(dut.CLK_SYS)
 
         # Do UART transmission
         for data_tx in data_send:
             # Start bit
             dut.UART_RX.value = 0
             for _ in range(baudrate):
-                await RisingEdge(dut.CLK_100MHz)
+                await RisingEdge(dut.CLK_SYS)
             # Data Transmission
             for val in data_tx[::-1]:
                 dut.UART_RX.value = val
                 for _ in range(baudrate):
-                    await RisingEdge(dut.CLK_100MHz)
+                    await RisingEdge(dut.CLK_SYS)
             # Stop bit
             dut.UART_RX.value = 1
             await RisingEdge(dut.uart_mod_rdy)
             for _ in range(int(baudrate / 2)):
-                await RisingEdge(dut.CLK_100MHz)
+                await RisingEdge(dut.CLK_SYS)
 
         # Idle time
         for _ in range(baudrate):
-            await RisingEdge(dut.CLK_100MHz)
+            await RisingEdge(dut.CLK_SYS)
 
     # Checking Ending
     for _ in range(4 * baudrate):
-        await RisingEdge(dut.CLK_100MHz)
+        await RisingEdge(dut.CLK_SYS)
 
 
 @pytest.mark.simulation

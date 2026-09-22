@@ -83,7 +83,7 @@ class InterfaceRunner(ABC):
         val = data[self._bits.bytes_head :]
         return int.from_bytes(val, byteorder="big", signed=is_signed)
 
-    def get_dut_configs(self) -> dict[str, ConfigurationDUT]:
+    def get_dut_configs(self) -> dict[int | str, ConfigurationDUT]:
         """Loading the header information of each implemented test device (skeleton) on target device
         :returns:   Dict with Dataclass with ConfigurationDUT of each single structure
         """

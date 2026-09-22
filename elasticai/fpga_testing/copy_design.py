@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 from shutil import copyfile, copytree
 
@@ -77,19 +78,28 @@ def copy_design_olimex_gatemate_files(dest: Path = _get_basic_path()) -> None:
     )
 
 
-def copy_skeleton(name: str, num_id: int, dest: Path) -> None:
+class TargetsSkeleton(Enum):
+    DNN = "dnn"
+    FILTER = "filter"
+    ROM = "rom"
+    RAM = "ram"
+    MATH_MULT = "math_mult"
+    MATH_MAC = "math_mac"
+
+
+def copy_skeleton(name: TargetsSkeleton, num_id: int, dest: Path) -> None:
     """Function for copying a skeleton to test structures on FPGAs
     :param name:    Name of skeleton file [dnn, filter, math, ram, rom]
     :param num_id:  ID number of skeleton
     :param dest:    Path with destination folder to copy all files into
     :return:        None
     """
-    if name.lower() not in ["dnn", "filter", "math", "ram", "rom"]:
-        raise ValueError(f"{name} is not a valid skeleton name")
+    if name.value.lower() not in [t.value for t in TargetsSkeleton]:
+        raise ValueError(f"{name.value} is not a valid skeleton name")
 
     path2design = _get_template_path() / "skeleton"
     dest.mkdir(parents=True, exist_ok=True)
     copyfile(
-        src=path2design / f"skeleton_{name}.v".lower(),
-        dst=dest / f"skeleton_{name}_{num_id}.v".lower(),
+        src=path2design / f"skeleton_{name.value}.v".lower(),
+        dst=dest / f"skeleton_{name.value}_{num_id}.v".lower(),
     )

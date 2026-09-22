@@ -8,7 +8,7 @@ module TOP_MODULE#(
     parameter integer TEST_ENV_DATA_BITWIDTH = 16
 )(
     // --- Global signals
-    input wire          CLK_100MHz,
+    input wire          CLK_SYS,
     input wire          RSTN,
     // --- General purpose I/O
     output wire [3:0]   LED,
@@ -44,7 +44,7 @@ module TOP_MODULE#(
         .NUM_BITS_HEADER(TEST_HEAD_BITWIDTH), 
         .UINT_DATATYPE(1'd1)
     ) DUT(
-        .CLK(CLK_100MHz),
+        .CLK(CLK_SYS),
         .RSTN(RSTN),
         .START_FLAG(dut_start_flag),
         .SEL(dut_sel),
@@ -63,7 +63,7 @@ module TOP_MODULE#(
         .BITWIDTH(UART_BITWIDTH),
         .NSAMP(4)
     ) UART_MOD (
-        .CLK_SYS(CLK_100MHz),
+        .CLK_SYS(CLK_SYS),
         .RSTN(RSTN),
         .RX(UART_RX),
         .TX(UART_TX),
@@ -76,7 +76,7 @@ module TOP_MODULE#(
         .FIFO_SIZE(UART_FIFO_BYTE_SIZE),
         .BITWIDTH(UART_BITWIDTH)
     ) UART_FIFO(
-        .CLK_SYS(CLK_100MHz),
+        .CLK_SYS(CLK_SYS),
         .RSTN(RSTN),
         .START_FLAG(1'd0),
         .UART_START_FLAG(uart_mod_start),
@@ -96,7 +96,7 @@ module TOP_MODULE#(
         .BITWIDTH_HEAD(TEST_HEAD_BITWIDTH),
         .NUM_DUT(NUM_DUT)
     ) MIDDLEWARE(
-        .CLK_SYS(CLK_100MHz),
+        .CLK_SYS(CLK_SYS),
         .RSTN(RSTN),
         .FIFO_RDY(uart_fifo_rdy),
         .FIFO_DIN(data_fifo_to_mid),

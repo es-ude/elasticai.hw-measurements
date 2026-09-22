@@ -1,7 +1,6 @@
 import cocotb
-from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.clock import Clock
-
+from cocotb.triggers import ClockCycles, RisingEdge
 
 PERIOD_NS = 10
 
@@ -24,12 +23,12 @@ async def reset_dut(dut, cycles_rst: int = 4):
         await ClockCycles(dut.CLK_100MHz, cycles_rst)
         dut.RSTN.value = 1
         await ClockCycles(dut.CLK_100MHz, cycles_rst)
-        
+
     for _ in range(16):
         await RisingEdge(dut.CLK_100MHz)
 
 
-async def spi_transmission(dut, reg: bytes, data: bytes, spi_clk: int=4, bitwidth: int=24) -> str:
+async def spi_transmission(dut, reg: bytes, data: bytes, spi_clk: int = 4, bitwidth: int = 24) -> bytes:
     def bytes_to_bitstring(data: bytes) -> str:
         return "".join(f"{byte:08b}" for byte in data)
 
@@ -52,6 +51,5 @@ async def spi_transmission(dut, reg: bytes, data: bytes, spi_clk: int=4, bitwidt
     await ClockCycles(dut.CLK_100MHz, 20)
 
     return bytes(
-        int("".join(str(b) for b in return_data[i:i + 8]), 2)
-        for i in range(0, len(return_data), 8)
+        int("".join(str(b) for b in return_data[i : i + 8]), 2) for i in range(0, len(return_data), 8)
     )

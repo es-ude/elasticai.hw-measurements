@@ -5,7 +5,7 @@ module TOP_MODULE#(
     parameter integer TEST_ENV_DATA_BITWIDTH = 16
 )(
     // --- Global signals
-    input wire          CLK_100MHz,
+    input wire          CLK_SYS,
     input wire          RSTN,
     // --- General purpose I/O
     output wire         LED,
@@ -42,7 +42,7 @@ module TOP_MODULE#(
         .NUM_BITS_HEADER(TEST_HEAD_BITWIDTH), 
         .UINT_DATATYPE(1'd1)
     ) DUT(
-        .CLK(CLK_100MHz),
+        .CLK(CLK_SYS),
         .RSTN(RSTN),
         .START_FLAG(dut_start_flag),
         .SEL(dut_sel),
@@ -62,7 +62,7 @@ module TOP_MODULE#(
         .CPHA(1'd0),
         .MSB(1'd1)
     ) SPI_MOD (
-        .CLK_SYS(CLK_100MHz),
+        .CLK_SYS(CLK_SYS),
         .RSTN(RSTN),
         .CSN(SPI_CSN),
         .SCLK(SPI_SCLK),
@@ -80,7 +80,7 @@ module TOP_MODULE#(
         .BITWIDTH_HEAD(TEST_HEAD_BITWIDTH),
         .NUM_DUT(NUM_DUT)
     ) MIDDLEWARE(
-        .CLK_SYS(CLK_100MHz),
+        .CLK_SYS(CLK_SYS),
         .RSTN(RSTN),
         .FIFO_RDY(spi_mod_rdy),
         .FIFO_DIN(data_spi_to_mid),

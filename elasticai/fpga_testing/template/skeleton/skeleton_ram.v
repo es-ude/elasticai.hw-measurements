@@ -20,10 +20,10 @@
 
 
 module SKELETON_RAM#(
-    parameter integer BITWIDTH_IN = 5'd12,
-    parameter integer BITWIDTH_SYS = 5'd16,
-    parameter integer BITWIDTH_HEAD = 6'd26,
-	parameter integer BITWIDTH_ADR = 6'd6
+    parameter integer BITWIDTH_IN = 12,
+    parameter integer BITWIDTH_SYS = 16,
+    parameter integer BITWIDTH_HEAD = 26,
+	parameter integer BITWIDTH_ADR = 6
 )(
     input wire CLK_SYS,
     input wire RSTN,

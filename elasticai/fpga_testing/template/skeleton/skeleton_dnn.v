@@ -20,10 +20,10 @@
 
 
 module SKELETON_DNN#(
-	parameter integer BITWIDTH_IN = 5'd8,
-    parameter integer BITWIDTH_SYS = 5'd16,
-    parameter integer BITWIDTH_HEAD = 6'd26,
-	parameter integer ADR_WIDTH = 6'd6
+	parameter integer BITWIDTH_IN = 8,
+    parameter integer BITWIDTH_SYS = 16,
+    parameter integer BITWIDTH_HEAD = 26,
+	parameter integer ADR_WIDTH = 6
 )(
     input wire CLK,
     input wire RSTN,

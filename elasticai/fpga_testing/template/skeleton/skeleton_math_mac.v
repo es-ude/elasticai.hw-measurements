@@ -4,10 +4,10 @@
 //
 // Create Date:     11.06.2026, 22:04,43
 // Copied on: 	    {$date_copy_created}
-// Module Name:     SKELETON_MATH
+// Module Name:     SKELETON_MATH_MAC
 // Target Devices:  FPGA
 // Tool Versions:   1v1
-// Description:     Skeleton for testing math operations on device (in one system clock cycle)
+// Description:     Skeleton for testing math operations on device (MAC)
 // Dependencies:    None
 //
 // State: 	        Works! (System Test done: 16.01.2025)
@@ -19,13 +19,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module SKELETON_MATH#(
-    parameter integer BITWIDTH_IN = 5'd8,
-    parameter integer BITWIDTH_SYS = 5'd16,
-    parameter integer BITWIDTH_HEAD = 6'd26,
-    parameter integer BITWIDTH_ADR = 6'd6,
-    parameter integer NUM_PARAMS = 6'd16,
-    parameter integer NUM_MULT = 6'd1
+module SKELETON_MATH_MAC#(
+    parameter integer BITWIDTH_IN = 8,
+    parameter integer BITWIDTH_SYS = 16,
+    parameter integer BITWIDTH_HEAD = 26,
+    parameter integer BITWIDTH_ADR = 6,
+    parameter integer NUM_PARAMS = 16,
+    parameter integer NUM_MULT = 2
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -58,12 +58,11 @@ wire signed [SIZE_OUTPUT*BITWIDTH_OUT-'d1:0] data_mul;
 // --- Converting data
 genvar k0;
 wire [BITWIDTH_IN-'d1:0] bias0;
-wire [BITWIDTH_IN*NUM_PARAMS-'d1:0] wght0;
-wire [BITWIDTH_IN*NUM_PARAMS-'d1:0] data0;
+wire [BITWIDTH_IN*NUM_PARAMS-'d1:0] wght0, data0;
 
 assign bias0 = data_dut[0];
 for(k0 = 'd0; k0 < NUM_PARAMS; k0 = k0 + 'd1) begin
-    assign data0[(k0*BITWIDTH_IN)+:BITWIDTH_IN] = data_dut[1+k0];
+    assign data0[(k0*BITWIDTH_IN)+:BITWIDTH_IN] = data_dut[1 + k0];
     assign wght0[(k0*BITWIDTH_IN)+:BITWIDTH_IN] = data_dut[NUM_PARAMS + 1 + k0];
 end
 
@@ -101,12 +100,16 @@ always@(posedge CLK_SYS) begin
 end
 
 // --- DUT (JUST REPLACE HERE)
-MULT_LUT_SIGNED#(
-    .BITWIDTH(BITWIDTH_IN)
-) MULT (
-    .A(pipe_dut_in[0]),
-    .B(pipe_dut_in[1]),
-    .Q(data_mul)
+MAC#(BITWIDTH_IN, NUM_PARAMS, NUM_MULT) MAC(
+    .CLK_SYS(CLK_SYS),
+    .RSTN(RSTN),
+    .EN(EN),
+    .DO_CALC(run_test),
+    .IN_BIAS(bias0),
+    .IN_WEIGHTS(wght0),
+    .IN_DATA(data0),
+    .OUT_DATA(data_mul),
+    .DATA_RDY(RDY)
 );
 
 endmodule

@@ -36,8 +36,9 @@ module SKELETON_DNN#(
 	output wire DATA_VALID
 );
 
-localparam BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
-localparam NUM_INPUT = 5, NUM_OUTPUT = 3;
+localparam integer BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
+localparam integer NUM_INPUT = 5;
+localparam integer NUM_OUTPUT = 3;
 
 assign DATA_HEAD = {4'd7, NUM_INPUT[5:0], NUM_OUTPUT[5:0], BITWIDTH_IN[4:0], BITWIDTH_IN[4:0]};
 assign DATA_OUT[0+:BITWIDTH_OFFSET] = 'd0;

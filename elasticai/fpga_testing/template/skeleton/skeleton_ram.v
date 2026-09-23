@@ -37,8 +37,8 @@ module SKELETON_RAM#(
     output wire RDY
 );
 
-localparam BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
-localparam NUM_POSITIONS = 2**BITWIDTH_ADR-'d4;
+localparam integer BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
+localparam integer NUM_POSITIONS = 2 ** BITWIDTH_ADR-'d4;
 assign DATA_HEAD = {4'd3, NUM_POSITIONS[5:0], NUM_POSITIONS[5:0], BITWIDTH_IN[4:0], BITWIDTH_IN[4:0]};
 
 wire en_module, we_module;

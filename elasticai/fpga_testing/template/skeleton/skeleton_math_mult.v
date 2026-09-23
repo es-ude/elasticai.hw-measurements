@@ -23,9 +23,7 @@ module SKELETON_MATH_MULT#(
     parameter integer BITWIDTH_IN = 8,
     parameter integer BITWIDTH_SYS = 16,
     parameter integer BITWIDTH_HEAD = 26,
-    parameter integer BITWIDTH_ADR = 6,
-    parameter integer NUM_PARAMS = 1,
-    parameter integer NUM_MULT = 1
+    parameter integer BITWIDTH_ADR = 6
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -39,10 +37,13 @@ module SKELETON_MATH_MULT#(
     output wire RDY
 );
 
-localparam WAIT_CYC_MULT = 8'd1;
-localparam BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
-localparam BITWIDTH_OUT = 2*BITWIDTH_IN;
-localparam SIZE_INPUT = NUM_PARAMS, SIZE_OUTPUT = 1;
+localparam integer WAIT_CYC_MULT = 1;
+localparam integer BITWIDTH_OFFSET = BITWIDTH_SYS - BITWIDTH_IN;
+localparam integer BITWIDTH_OUT = 2 * BITWIDTH_IN;
+
+localparam integer NUM_MULT = 1;
+localparam integer SIZE_INPUT = 1;
+localparam integer SIZE_OUTPUT = 1;
 
 assign DATA_HEAD = {4'd4, SIZE_INPUT[5:0], SIZE_OUTPUT[5:0], BITWIDTH_IN[4:0], BITWIDTH_OUT[4:0]};
 

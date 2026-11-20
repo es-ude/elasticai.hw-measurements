@@ -15,6 +15,7 @@
 *coverage*
 .python-version
 elasticai/__init__.py
+tests
 
 ### devenv and yosys+nextpnr+OpenFPGA tools
 **/.devenv

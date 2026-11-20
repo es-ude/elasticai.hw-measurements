@@ -20,10 +20,10 @@
 
 
 module SPI_SLAVE_WCLK#(
-    parameter integer BITWIDTH = 6'd20,
-    parameter integer CPOL = 1'b0,
-    parameter integer CPHA = 1'b0,
-    parameter integer MSB = 1'd1
+    parameter integer BITWIDTH = 20,
+    parameter integer CPOL = 0,
+    parameter integer CPHA = 0,
+    parameter integer MSB = 1
 )(
     input wire CLK_SYS,
     input wire RSTN,
@@ -32,15 +32,15 @@ module SPI_SLAVE_WCLK#(
     input wire MOSI,
     output wire MISO,
     output reg DRDY,
-    input wire [BITWIDTH - 1'b1:0] DFROM_MIDDLEWARE,
-	output reg [BITWIDTH - 1'b1:0] DFOR_MIDDLEWARE
+    input wire [BITWIDTH-1:0] DFROM_MIDDLEWARE,
+	output reg [BITWIDTH-1:0] DFOR_MIDDLEWARE
     );
 
 
-localparam STATE_IDLE = 2'd0, STATE_SAMPLE = 2'd1, STATE_WRITE = 2'd2, STATE_DONE = 2'd3;
+localparam integer STATE_IDLE = 0, STATE_SAMPLE = 1, STATE_WRITE = 2, STATE_DONE = 3;
 reg [1:0] state;
-reg [BITWIDTH-'d1:0] buffer;
-reg sclk_buf, mosi_buf, sclk_dly, miso_bit;
+reg [BITWIDTH-1:0] buffer;
+reg csn_dly, sclk_buf, mosi_buf, sclk_dly, miso_bit;
 wire sclk_falling, sclk_rising, sclk_set, sclk_smp;
 
 assign MISO = (CSN) ? 1'dZ : miso_bit;
@@ -60,15 +60,17 @@ always@(posedge CLK_SYS) begin
 		sclk_dly <= CPOL;
 		miso_bit <= 1'd0;
 		DRDY <= 1'd0;
+		csn_dly <= 1'd0;
 		buffer <= {(BITWIDTH){1'b0}};
 	end else begin
 	    mosi_buf <= MOSI;
 	    sclk_buf <= SCLK;
 		sclk_dly <= sclk_buf;
-		
+		csn_dly <= CSN;
+
 		case(state)
 		STATE_IDLE: begin
-			if(!CSN) begin
+			if(~csn_dly) begin
 				state <= STATE_SAMPLE;
 				buffer <= DFROM_MIDDLEWARE;
 				miso_bit <= (MSB) ? DFROM_MIDDLEWARE[BITWIDTH-'d1] : DFROM_MIDDLEWARE[0];
@@ -79,7 +81,7 @@ always@(posedge CLK_SYS) begin
 			end
 		end
 		STATE_WRITE: begin
-			if(CSN) begin
+			if(csn_dly == 1'b1) begin
 				state <= STATE_DONE;
 			end else if(sclk_set) begin
 				miso_bit <= (MSB) ? buffer[BITWIDTH-'d1] : buffer[0];
@@ -89,7 +91,7 @@ always@(posedge CLK_SYS) begin
 			end
 		end
 		STATE_SAMPLE: begin
-			if(CSN) begin
+			if(csn_dly == 1'b1) begin
 				state <= STATE_DONE;
 			end else if(sclk_smp) begin
 				buffer <= (MSB) ? {buffer[BITWIDTH-'d2:0], mosi_buf} : {mosi_buf, buffer[BITWIDTH-'d1:'d1]};

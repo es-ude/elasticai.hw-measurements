@@ -27,7 +27,7 @@ def test_init_project_folder(path: Path) -> None:
 
 
 def test_copy_scripts_init(path: Path) -> None:
-    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_up5k.mk"]
+    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_s7.mk", "config_verilog_up5k.mk"]
     check_scripts.sort()
     check_main = ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]
     check_main.sort()
@@ -45,7 +45,7 @@ def test_copy_scripts_init(path: Path) -> None:
 
 
 def test_copy_scripts_reinit(path: Path) -> None:
-    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_up5k.mk"]
+    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_s7.mk", "config_verilog_up5k.mk"]
     check_scripts.sort()
     check_main = ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]
     check_main.sort()

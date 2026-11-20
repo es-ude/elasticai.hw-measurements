@@ -1,5 +1,4 @@
 .idea
-
 **/docs/apidocs
 **/test_dummy
 **/htmlcov
@@ -15,7 +14,7 @@
 *coverage*
 .python-version
 elasticai/__init__.py
-tests
+.DS_Store
 
 ### devenv and yosys+nextpnr+OpenFPGA tools
 **/.devenv
@@ -24,4 +23,5 @@ tests
 **/.envrc
 designs
 scripts
-
+tests
+Makefile

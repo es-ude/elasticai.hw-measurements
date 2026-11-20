@@ -8,4 +8,5 @@ inputs:
         follows: nixpkgs
   nixpkgs-unstable:
     url: github:nixos/nixpkgs/nixpkgs-unstable
-
+  openxc7:
+    url: github:openXC7/toolchain-nix

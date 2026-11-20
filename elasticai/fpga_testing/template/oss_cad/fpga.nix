@@ -7,12 +7,51 @@
 }: let
   pkgs-unstable = import inputs.nixpkgs-unstable {system = pkgs.stdenv.system;};
   uv_run = "${pkgs-unstable.uv}/bin/uv run --active";
+  system = pkgs.stdenv.hostPlatform.system;
+  oxc = inputs.openxc7.packages.${system};
+  oxpkgs = inputs.openxc7.inputs.nixpkgs.legacyPackages.${system};
+  nextpnr = oxc.nextpnr.overrideAttrs (old: {
+    buildInputs =
+      (old.buildInputs or [])
+      ++ oxpkgs.lib.optionals oxpkgs.stdenv.isDarwin [oxpkgs.llvmPackages.openmp];
+  });
+  chipdb = oxc.nextpnr-xilinx-chipdb.spartan7.override {inherit nextpnr;};
+  pyEnv = oxpkgs.python312.withPackages (ps:
+    with ps; [
+      textx
+      pyyaml
+      simplejson
+      intervaltree
+      arpeggio
+      setuptools
+      future
+      sortedcontainers
+      cython
+      packaging
+      more-itertools
+      jaraco-functools
+    ]);
+  fasm2frames = pkgs.writeShellScriptBin "openxc7-fasm2frames" ''
+    export PYTHONPATH="${oxc.prjxray}/usr/share/python3:${oxc.fasm}/lib/python3.12/site-packages"
+    exec ${pyEnv}/bin/python3 ${oxc.prjxray}/bin/fasm2frames "$@"
+  '';
 in {
-  packages = [
-    pkgs.zlib # needed as dependency cocotb/ghdl under circumstances
-    pkgs.gnutar
-    pkgs.picotool
-  ];
+  packages =
+    [
+      pkgs.zlib # needed as dependency cocotb/ghdl under circumstances
+      pkgs.gnutar
+      pkgs.picotool
+      nextpnr
+      oxc.prjxray
+      fasm2frames
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux [oxc.fpga-assembler];
+
+  env = {
+    NEXTPNR_XILINX_DIR = "${nextpnr}";
+    PRJXRAY_DB_DIR = "${nextpnr}/share/nextpnr/external/prjxray-db";
+    CHIPDB_DIR = "${chipdb}";
+  };
 
   scripts = {
     flash_dirty_jtag = {

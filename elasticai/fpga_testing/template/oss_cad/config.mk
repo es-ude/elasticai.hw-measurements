@@ -2,6 +2,11 @@ PRJ_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 SRC_ROOT := $(PRJ_ROOT)/$(SRC_DIR)
 SCRIPTS_ROOT := $(PRJ_ROOT)/scripts
 BUILD_OUT := $(PRJ_ROOT)/build
+ifeq ($(DEVICE),S7)
+    BITEXT := bit
+else
+    BITEXT := bin
+endif
 
 
 print-paths:
@@ -18,15 +23,15 @@ all: clean synthesize bitstream
 synthesize: $(BUILD_OUT)/synth/$(TOP).json
 
 .PHONY: bitstream
-bitstream: $(BUILD_OUT)/$(TOP).bin
+bitstream: $(BUILD_OUT)/$(TOP).$(BITEXT)
 
 .PHONY: wave
 wave: $(BUILD_OUT)/sim/$(TOP).vcd
 	gtkwave $(BUILD_OUT)/sim/$(TOP).vcd
 
 .PHONY: flash
-flash: $(BUILD_OUT)/$(TOP).bit
-	openFPGALoader --cable dirtyJtag --reset --bitstream $(BUILD_OUT)/$(TOP).bit
+flash: $(BUILD_OUT)/$(TOP).$(BITEXT)
+	openFPGALoader --cable dirtyJtag --reset --bitstream $(BUILD_OUT)/$(TOP).$(BITEXT)
 
 .PHONY: clean
 clean:
@@ -38,6 +43,8 @@ ifeq ($(DEVICE),UP5K)
     include $(SCRIPTS_ROOT)/config_verilog_up5k.mk
 else ifeq ($(DEVICE),CCGM1A1)
     include $(SCRIPTS_ROOT)/config_verilog_ccgm1a1.mk
+else ifeq ($(DEVICE),S7)
+    include $(SCRIPTS_ROOT)/config_verilog_s7.mk
 else
 	$(error Unsupported device: $(DEVICE))
 endif

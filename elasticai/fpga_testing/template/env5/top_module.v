@@ -1,5 +1,5 @@
 module TOP_MODULE#(
-    parameter integer NUM_DUT = 2,
+    parameter integer NUM_DUT = 1,
     parameter integer TEST_ENV_CMDS_BITWIDTH = 2,
     parameter integer TEST_ENV_ADR_WIDTH = 6,
     parameter integer TEST_ENV_DATA_BITWIDTH = 16

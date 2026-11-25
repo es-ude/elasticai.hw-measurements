@@ -24,7 +24,7 @@ module TOP_MODULE#(
 
 	localparam SPI_BITWIDTH = TEST_ENV_CMDS_BITWIDTH + TEST_ENV_ADR_WIDTH + TEST_ENV_DATA_BITWIDTH;
     localparam TEST_HEAD_BITWIDTH = 32;
-	localparam NUM_DUT = 2;
+	localparam NUM_DUT = 1;
 
     wire CLK_SYS;
     // --- Using the internal clock

@@ -1,37 +1,74 @@
 from pathlib import Path
 
 
-def read_bitstream_file_amd(path_to_bitstream_file: Path, remove_header: bool = True) -> bytes:
-    """Reading the content of a bitstream file (*.bit, *.bin) compiled from AMD Vivado for AMD FPGAs
-    :param path_to_bitstream_file:      Path to the bitstream file
-    :param remove_header:               Boolean for removing the header information
-    :return:                            Byte array with flash content
-    """
-    if path_to_bitstream_file.suffix not in [".bin", ".bit"]:
-        raise ValueError("Bit file must be in binary format")
+class BitstreamReader:
+    """Reading the content of bitstream files of different FPGA vendors as bytes, e.g. for writing them into the flash of the FPGA"""
 
-    data = path_to_bitstream_file.read_bytes()
-    if remove_header:
-        header = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
-        pos0 = data.find(header)
-        if pos0 == -1:
-            raise Exception("No padding words")
-        sync = b"\xaa\x99\x55\x66"
-        pos1 = data.find(sync)
-        if pos1 == -1:
-            raise Exception("Sync word not found")
-        data = data[pos0:]
-    return data
+    VENDORS = ("amd", "lattice", "cologne_chip")
+    AMD_PADDING = b"\xff" * 12
+    AMD_SYNC_WORD = b"\xaa\x99\x55\x66"
 
+    @staticmethod
+    def _read_file(path_to_bitstream_file: Path | str, suffixes: tuple[str, ...], hint: str) -> bytes:
+        path = Path(path_to_bitstream_file)
+        if path.suffix.lower() not in suffixes:
+            raise ValueError(f"Bitstream file must have the extension {' or '.join(suffixes)} ({hint}), got '{path.name}'")
+        data = path.read_bytes()
+        if len(data) == 0:
+            raise ValueError(f"Bitstream file '{path.name}' is empty")
+        return data
 
-def read_bitstream_file_lattice(path_to_bitstream_file: Path) -> bytes:
-    """Reading the content of a bitstream file (*.bin) compiled for Lattice FPGAs
-    :param path_to_bitstream_file:      Path to the bitstream file
-    :return:                            Byte array with flash content
-    """
-    if path_to_bitstream_file.suffix not in [".bin"]:
-        raise ValueError("Bit file must be in binary format (bin)")
-    return path_to_bitstream_file.read_bytes()
+    @classmethod
+    def read_amd(cls, path_to_bitstream_file: Path | str, remove_header: bool = True) -> bytes:
+        """Reading the content of a bitstream file (*.bit, *.bin) compiled from AMD Vivado for AMD FPGAs
+        :param path_to_bitstream_file:      Path to the bitstream file (*.bin without header needs `write_bitstream -bin_file`)
+        :param remove_header:               Boolean for removing the header information of the *.bit file (everything before the padding words)
+        :return:                            Byte array with flash content
+        """
+        data = cls._read_file(path_to_bitstream_file, (".bin", ".bit"), "AMD Vivado")
+        if not remove_header:
+            return data
+
+        pos_padding = data.find(cls.AMD_PADDING)
+        if pos_padding == -1:
+            raise ValueError("No padding words found, it is not a bitstream of an AMD FPGA")
+        if data.find(cls.AMD_SYNC_WORD, pos_padding) == -1:
+            raise ValueError("Sync word not found, it is not a bitstream of an AMD FPGA")
+        return data[pos_padding:]
+
+    @classmethod
+    def read_lattice(cls, path_to_bitstream_file: Path | str) -> bytes:
+        """Reading the content of a bitstream file (*.bin) compiled for Lattice FPGAs
+        :param path_to_bitstream_file:      Path to the bitstream file
+        :return:                            Byte array with flash content
+        """
+        return cls._read_file(path_to_bitstream_file, (".bin",), "binary format of Lattice")
+
+    @classmethod
+    def read_cologne_chip(cls, path_to_bitstream_file: Path | str) -> bytes:
+        """Reading the content of a bitstream file (*.bit, e.g. design_00.cfg.bit) compiled for Cologne Chip GateMate FPGAs
+        The binary file is created by `gmpack --bit`, the ASCII file (*.cfg) is not a valid content for the flash
+        :param path_to_bitstream_file:      Path to the bitstream file
+        :return:                            Byte array with flash content
+        """
+        return cls._read_file(path_to_bitstream_file, (".bit",), "binary format of GateMate, not the ASCII *.cfg")
+
+    @classmethod
+    def read(cls, vendor: str, path_to_bitstream_file: Path | str, **kwargs) -> bytes:
+        """Reading the content of a bitstream file of the selected FPGA vendor
+        :param vendor:                      String with the vendor of the FPGA: "amd", "lattice" or "cologne_chip"
+        :param path_to_bitstream_file:      Path to the bitstream file
+        :param kwargs:                      Further options of the reader of the vendor (e.g. remove_header for AMD)
+        :return:                            Byte array with flash content
+        """
+        readers = {
+            "amd": cls.read_amd,
+            "lattice": cls.read_lattice,
+            "cologne_chip": cls.read_cologne_chip,
+        }
+        if vendor not in readers:
+            raise ValueError(f"Unknown FPGA vendor '{vendor}', use one of {cls.VENDORS}")
+        return readers[vendor](path_to_bitstream_file, **kwargs)
 
 
 def write_into_bitstream_file(path_to_file: Path, data: bytes) -> None:
@@ -80,22 +117,3 @@ const uint8_t bitstream[{len(data)}] = {{
             hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
             f.write(f"\t{hex_bytes}, \n")
         f.write("""};""")
-
-
-def translate_bit_to_bin(path_to_bitstream_folder: Path, path_to_source: Path) -> list[Path]:
-    """Translating a full bitstream file (*.bit) into dedicated file (*.bin) used for direct AMD FPGA flashing
-    :param path_to_bitstream_folder:    Path to the generated bitstream file from AMD Vivado
-    :param path_to_source:              Path to the new bitstream file
-    :return:                            List with paths to bitstream files
-    """
-    used_bitstream_files = list(path_to_bitstream_folder.glob("*.bit"))
-
-    if len(used_bitstream_files) == 0:
-        raise FileNotFoundError(f"No .bitstream files found in {path_to_source}")
-
-    new_path = list()
-    for file in used_bitstream_files:
-        content = read_bitstream_file_amd(file, remove_header=True)
-        new_path.append(path_to_source / f"{file.stem}.bin")
-        write_into_bitstream_file(new_path[-1], content)
-    return new_path

@@ -1,17 +1,76 @@
 import unittest
+import pytest
 from pathlib import Path
 from shutil import rmtree
 
 from elasticai.fpga_testing import get_path_to_project
 
 from .bin_build import (
-    read_bitstream_file_amd,
-    read_bitstream_file_lattice,
-    translate_bit_to_bin,
+    BitstreamReader,
     write_bitstream_into_cheader,
     write_into_bitstream_file,
     write_into_bitstream_text,
 )
+
+
+PAYLOAD = b"\xff" * 32 + b"\x00\x00\x00\xbb\x11\x22\x00\x44" + b"\xaa\x99\x55\x66" + bytes(range(64))
+
+
+def _write(tmp_path, name: str, content: bytes):
+    path = tmp_path / name
+    path.write_bytes(content)
+    return path
+
+
+def test_amd_bit_file_header_is_removed(tmp_path):
+    header = b"\x00\x09\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\x00\x01a\x00\x0adesign;UTF\x00e\x00\x00\x00\x60"
+    path = _write(tmp_path, "design.bit", header + PAYLOAD)
+
+    assert BitstreamReader.read_amd(path) == PAYLOAD
+    assert BitstreamReader.read_amd(path, remove_header=False) == header + PAYLOAD
+
+
+def test_amd_bin_file_stays_unchanged(tmp_path):
+    path = _write(tmp_path, "design.bin", PAYLOAD)
+
+    assert BitstreamReader.read_amd(str(path)) == PAYLOAD
+
+
+def test_amd_rejects_files_without_padding_or_sync_word(tmp_path):
+    with pytest.raises(ValueError, match="padding"):
+        BitstreamReader.read_amd(_write(tmp_path, "a.bit", b"\x01" * 100))
+    with pytest.raises(ValueError, match="Sync word"):
+        BitstreamReader.read_amd(_write(tmp_path, "b.bit", b"\xff" * 32 + b"\x01" * 100))
+
+
+def test_lattice_accepts_only_bin_files(tmp_path):
+    assert BitstreamReader.read_lattice(_write(tmp_path, "design.bin", b"\x7e\xaa\x99\x7e")) == b"\x7e\xaa\x99\x7e"
+    with pytest.raises(ValueError, match="extension"):
+        BitstreamReader.read_lattice(_write(tmp_path, "design.bit", b"\x7e\xaa\x99\x7e"))
+
+
+def test_cologne_chip_accepts_binary_bit_file_but_not_the_ascii_cfg(tmp_path):
+    content = bytes([0xD9, 0x01, 0xED, 0x00])
+
+    assert BitstreamReader.read_cologne_chip(_write(tmp_path, "blink_00.cfg.bit", content)) == content
+    with pytest.raises(ValueError, match="ASCII"):
+        BitstreamReader.read_cologne_chip(_write(tmp_path, "blink_00.cfg", b"D9 01 ED 00\n"))
+
+
+def test_empty_files_are_rejected(tmp_path):
+    with pytest.raises(ValueError, match="empty"):
+        BitstreamReader.read_lattice(_write(tmp_path, "design.bin", b""))
+
+
+def test_read_selects_the_reader_of_the_vendor(tmp_path):
+    path = _write(tmp_path, "design.bin", PAYLOAD)
+
+    assert BitstreamReader.read("amd", path) == PAYLOAD
+    assert BitstreamReader.read("lattice", path) == PAYLOAD
+    assert BitstreamReader.read("amd", path, remove_header=False) == PAYLOAD
+    with pytest.raises(ValueError, match="Unknown FPGA vendor"):
+        BitstreamReader.read("xilinx", path)
+
 
 
 class TestBitStreamTranslator(unittest.TestCase):
@@ -28,36 +87,21 @@ class TestBitStreamTranslator(unittest.TestCase):
         pass
 
     def test_write_bin_file_with_header_absolute(self):
-        data = read_bitstream_file_amd(
+        data = BitstreamReader().read_amd(
             path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit", remove_header=False
         )
         write_into_bitstream_file(path_to_file=self.path_to_temp / "TOP_MODULE_0.bin", data=data)
         self.assertTrue((self.path_to_temp / "TOP_MODULE_0.bin").exists())
 
     def test_write_bin_file_with_header_relative(self):
-        data = read_bitstream_file_amd(
+        data = BitstreamReader().read_amd(
             path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit", remove_header=False
         )
         write_into_bitstream_file(path_to_file=Path("./temp_build") / "TOP_MODULE_R.bin", data=data)
         self.assertTrue((self.path_to_temp / "TOP_MODULE_R.bin").exists())
 
-    def test_translate_bit_to_bin(self):
-        files = translate_bit_to_bin(
-            path_to_bitstream_folder=self.path_to_template, path_to_source=self.path_to_temp
-        )
-        self.assertTrue(len(files), 1)
-        self.assertTrue((self.path_to_temp / "TOP_MODULE.bin").exists())
-
-        data_bit = read_bitstream_file_amd(
-            path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit",
-        )
-        data_bin = read_bitstream_file_amd(
-            path_to_bitstream_file=self.path_to_temp / "TOP_MODULE.bin",
-        )
-        self.assertEqual(data_bit, data_bin)
-
     def test_write_text_file_with_header(self):
-        data = read_bitstream_file_amd(
+        data = BitstreamReader().read_amd(
             path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit", remove_header=False
         )
         write_into_bitstream_text(
@@ -70,7 +114,7 @@ class TestBitStreamTranslator(unittest.TestCase):
         self.assertTrue((self.path_to_temp / "TOP_MODULE_1.txt").exists())
 
     def test_write_text_file_without_header(self):
-        data = read_bitstream_file_amd(
+        data = BitstreamReader().read_amd(
             path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit", remove_header=True
         )
         write_into_bitstream_text(
@@ -81,21 +125,6 @@ class TestBitStreamTranslator(unittest.TestCase):
             path_to_file=self.path_to_temp / "TOP_MODULE_3.txt", data=data, add_lines=False
         )
         self.assertTrue((self.path_to_temp / "TOP_MODULE_3.txt").exists())
-
-    def test_read_lattice_bin_file(self):
-        files = translate_bit_to_bin(
-            path_to_bitstream_folder=self.path_to_template, path_to_source=self.path_to_temp
-        )
-        self.assertTrue(len(files), 1)
-        self.assertTrue((self.path_to_temp / "TOP_MODULE.bin").exists())
-
-        data_bit = read_bitstream_file_amd(
-            path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit",
-        )
-        data_bin = read_bitstream_file_lattice(
-            path_to_bitstream_file=self.path_to_temp / "TOP_MODULE.bin",
-        )
-        self.assertEqual(data_bit, data_bin)
 
     def test_write_bitstream_into_cheader(self):
         filename = "TOP_MODULE.h"

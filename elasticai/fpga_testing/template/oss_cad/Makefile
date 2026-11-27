@@ -6,6 +6,9 @@ PACKAGE = sg48
 # --- Settings for AMD Spartan-7 S50 for ENV5
 #DEVICE = S7
 #PACKAGE = xc7s50ftgb196-1
+# --- Settings for AMD Artix-7 100T for Arty A7
+#DEVICE = S7
+#PACKAGE = xc7a100tcsg324-1
 
 # --- Settings for the design
 TOP = TOP_MODULE

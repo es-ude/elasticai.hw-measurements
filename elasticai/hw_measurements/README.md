@@ -56,7 +56,7 @@ power to the device by holding the power button or plugging it from the socket.
 
 ## Examples for DAQ Hardware Characterization
 See the example for characterizing ...
-- [Analog-Digital Converter (ADC)](https://github.com/es-ude/elastic-ai.hw-measurements/docs/examples/adc.md)
-- [Analog Amplifier](https://github.com/es-ude/elastic-ai.hw-measurements/docs/examples/amp.md)
-- [Digital Analog Converter](https://github.com/es-ude/elastic-ai.hw-measurements/docs/examples/dac.md)
-- [Analog Noise Measurement](https://github.com/es-ude/elastic-ai.hw-measurements/docs/examples/noise.md)
+- [Analog-Digital Converter (ADC)](https://github.com/es-ude/elastic-ai.hw-measurements/blob/main/docs/examples/adc.md)
+- [Analog Amplifier](https://github.com/es-ude/elastic-ai.hw-measurements/blob/main/docs/examples/amp.md)
+- [Digital Analog Converter](https://github.com/es-ude/elastic-ai.hw-measurements/blob/main/docs/examples/dac.md)
+- [Analog Noise Measurement](https://github.com/es-ude/elastic-ai.hw-measurements/blob/main/docs/examples/noise.md)

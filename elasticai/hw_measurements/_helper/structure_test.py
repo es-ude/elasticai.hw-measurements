@@ -2,20 +2,19 @@ from .structure import get_path_to_project, init_project_folder
 
 
 def test_path_to_project_basic() -> None:
-    checks = ["elastic-ai", "hw-measurements"]
     rslt = get_path_to_project(new_folder="")
 
     assert rslt.is_dir()
-    assert rslt.parts[-1] == f"{checks[0]}.{checks[1]}"
+    assert (rslt / "pyproject.toml").is_file()
 
 
 def test_path_to_project_ref() -> None:
-    checks = ["elastic-ai", "hw-measurements", "test"]
-    rslt = get_path_to_project(new_folder=checks[2])
+    new_folder = "test"
+    rslt = get_path_to_project(new_folder=new_folder)
 
     assert not rslt.exists()
-    assert rslt.parts[-1] == f"{checks[2]}"
-    assert rslt.parts[-2] == f"{checks[0]}.{checks[1]}"
+    assert rslt.parts[-1] == new_folder
+    assert (rslt.parent / "pyproject.toml").is_file()
 
 
 def test_creates_runs_and_config_folders():

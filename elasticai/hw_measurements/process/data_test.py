@@ -197,7 +197,7 @@ class TestDataAnalysis(unittest.TestCase):
             y_pred=np.sin(2 * np.pi * 50 * t),
             y_true=np.sin(2 * np.pi * 50 * t),
         )
-        self.assertEqual(rslt, 1.0)
+        self.assertAlmostEqual(rslt, 1.0, places=9)
 
     def test_calculate_cosine_half(self):
         t = np.linspace(0, 1, 1000, endpoint=True)

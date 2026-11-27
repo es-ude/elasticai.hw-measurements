@@ -16,7 +16,7 @@ module TOP_MODULE#(
     output wire         SPI_MISO,
     input wire          SPI_MOSI,
     input wire          SPI_SCLK,
-    input wire          SPI_CSN,
+    input wire          SPI_CSN
     // --- I2C Communication
     //input wire          I2C_SCL,
     //input wire          I2C_SDA,

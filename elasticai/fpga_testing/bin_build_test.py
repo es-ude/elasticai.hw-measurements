@@ -1,4 +1,5 @@
 import unittest
+from contextlib import chdir
 from pathlib import Path
 from shutil import rmtree
 
@@ -106,7 +107,8 @@ class TestBitStreamTranslator(unittest.TestCase):
         data = BitstreamReader().read_amd(
             path_to_bitstream_file=self.path_to_template / "TOP_MODULE.bit", remove_header=False
         )
-        write_into_bitstream_file(path_to_file=Path("./temp_build") / "TOP_MODULE_R.bin", data=data)
+        with chdir(self.path_to_temp):
+            write_into_bitstream_file(path_to_file=Path("TOP_MODULE_R.bin"), data=data)
         self.assertTrue((self.path_to_temp / "TOP_MODULE_R.bin").exists())
 
     def test_write_text_file_with_header(self):

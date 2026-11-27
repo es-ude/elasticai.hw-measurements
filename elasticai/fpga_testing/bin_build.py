@@ -12,7 +12,9 @@ class BitstreamReader:
     def _read_file(path_to_bitstream_file: Path | str, suffixes: tuple[str, ...], hint: str) -> bytes:
         path = Path(path_to_bitstream_file)
         if path.suffix.lower() not in suffixes:
-            raise ValueError(f"Bitstream file must have the extension {' or '.join(suffixes)} ({hint}), got '{path.name}'")
+            raise ValueError(
+                f"Bitstream file must have the extension {' or '.join(suffixes)} ({hint}), got '{path.name}'"
+            )
         data = path.read_bytes()
         if len(data) == 0:
             raise ValueError(f"Bitstream file '{path.name}' is empty")
@@ -51,7 +53,9 @@ class BitstreamReader:
         :param path_to_bitstream_file:      Path to the bitstream file
         :return:                            Byte array with flash content
         """
-        return cls._read_file(path_to_bitstream_file, (".bit",), "binary format of GateMate, not the ASCII *.cfg")
+        return cls._read_file(
+            path_to_bitstream_file, (".bit",), "binary format of GateMate, not the ASCII *.cfg"
+        )
 
     @classmethod
     def read(cls, vendor: str, path_to_bitstream_file: Path | str, **kwargs) -> bytes:

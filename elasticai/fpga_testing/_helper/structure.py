@@ -21,7 +21,9 @@ def init_project_folder(new_folder: str = "") -> None:
 
 
 def copy_oss_cad_scripts(dst: Path = get_path_to_project()) -> None:
-    """Copies oss cad scripts and devenv scripts to destination folder
+    """Copies oss cad scripts and devenv scripts to destination folder.
+    The scripts (*.mk) are updated every time, the main files (Makefile, fpga.nix, devenv.nix, devenv.yaml) are only copied if
+    they do not exist, so the settings of the project (e.g. device, top module, frequency) are kept
     :param dst: Path to the destination folder
     :return:    None"""
     path_to_template = Path(dut.__file__).parent / "template" / "oss_cad"
@@ -34,17 +36,9 @@ def copy_oss_cad_scripts(dst: Path = get_path_to_project()) -> None:
             remove(path2file.as_posix())
         copyfile(src=file.absolute(), dst=path2file)
 
-    # --- Step #2: Copying main files (which can be updated every time)
-    files_updated = ["Makefile", "fpga.nix"]
-    for file_name in files_updated:
-        path2file = dst.absolute() / file_name
-        if path2file.exists():
-            remove(path2file.as_posix())
-        copyfile(src=(path_to_template / path2file.name).as_posix(), dst=path2file.as_posix())
-
-    # --- Step #3: Copying main files (which will be not updated every time)
-    files_non_updated = ["devenv.nix", "devenv.yaml"]
-    for file_name in files_non_updated:
+    # --- Step #2: Copying main files (only if they are not available)
+    files_main = ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]
+    for file_name in files_main:
         path2file = dst.absolute() / file_name
         if not path2file.exists():
             copyfile(src=(path_to_template / path2file.name).as_posix(), dst=path2file.as_posix())

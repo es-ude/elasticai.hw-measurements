@@ -37,6 +37,14 @@ flash: $(BUILD_OUT)/$(TOP).$(BITEXT)
 clean:
 	rm -rf $(BUILD_OUT)/*
 
+.PHONY: print-device print-top print-bitext
+print-device:
+	@echo $(DEVICE)
+print-top:
+	@echo $(TOP)
+print-bitext:
+	@echo $(BITEXT)
+
 ##################################################
 ## File Generation
 ifeq ($(DEVICE),UP5K)

@@ -28,6 +28,8 @@ copy_oss_cad_scripts()
 ```
 As default value, the destination (arguments in both functions) are the project folder which includes a ```pyproject.toml``` file.
 
+`copy_oss_cad_scripts()` updates the scripts (`scripts/*.mk`) on every call. The main files `Makefile`, `fpga.nix`, `devenv.nix` and `devenv.yaml` are only copied if they do not exist, so your settings (e.g. `DEVICE`, `TOP`, `FREQ`) are kept. Delete a file to get the current template again.
+
 In order to get the design files for a specific device (e.g. for ENV5 with AMD Spartan-7), you have to enter this:
 ```python
 from elasticai.fpga_testing import copy_design

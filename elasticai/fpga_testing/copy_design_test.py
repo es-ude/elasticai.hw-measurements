@@ -44,9 +44,6 @@ def test_copy_design_arty7_files(path) -> None:
         "uart_fifo.v",
         "uart_middleware.v",
         "skeleton_echo.v",
-        "bram_single.v",
-        "bram_preload.mem",
-        "skeleton_ram.v",
     ]
     files_check.sort()
 
@@ -66,9 +63,6 @@ def test_copy_design_env5_files(path) -> None:
         "spi_middleware.v",
         "spi_slave_wclk.v",
         "skeleton_echo.v",
-        "bram_single.v",
-        "bram_preload.mem",
-        "skeleton_ram.v",
     ]
     files_check.sort()
 
@@ -88,9 +82,6 @@ def test_copy_design_env6mini_files(path) -> None:
         "spi_middleware.v",
         "spi_slave_wclk.v",
         "skeleton_echo.v",
-        "bram_single.v",
-        "bram_preload.mem",
-        "skeleton_ram.v",
     ]
     files_check.sort()
 

@@ -4,7 +4,11 @@ ifeq ($(filter xc7%,$(PACKAGE)),)
 $(error PACKAGE must be a Xilinx part for DEVICE=S7, e.g. PACKAGE = xc7s50ftgb196-1 (is: '$(PACKAGE)'))
 endif
 
-FAMILY             ?= spartan7
+ifneq ($(filter xc7a%,$(PACKAGE)),)
+    FAMILY         ?= artix7
+else
+    FAMILY         ?= spartan7
+endif
 NEXTPNR_XILINX_DIR ?= /opt/openxc7
 PRJXRAY_DB_DIR     ?= $(NEXTPNR_XILINX_DIR)/external/prjxray-db
 XILINX_GEN         ?= $(NEXTPNR_XILINX_DIR)/share/nextpnr/himbaechel/uarch/xilinx/gen/xilinx_gen.py
@@ -12,7 +16,7 @@ BBASM              ?= $(NEXTPNR_XILINX_DIR)/bin/bbasm
 CHIPDB_DIR         ?= $(PRJ_ROOT)/chipdb
 
 DBPART := $(shell echo $(PACKAGE) | sed -e 's/-.*//')
-DIE    := $(shell echo $(PACKAGE) | sed -E 's/^(xc7s[0-9]+).*/\1/')
+DIE    := $(shell echo $(PACKAGE) | sed -E 's/^(xc7[as][0-9]+t?).*/\1/')
 CHIPDB := $(CHIPDB_DIR)/$(DBPART).bin
 XDC    := $(SRC_ROOT)/io.xdc
 

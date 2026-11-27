@@ -1,7 +1,8 @@
 import unittest
-import pytest
 from pathlib import Path
 from shutil import rmtree
+
+import pytest
 
 from elasticai.fpga_testing import get_path_to_project
 
@@ -11,7 +12,6 @@ from .bin_build import (
     write_into_bitstream_file,
     write_into_bitstream_text,
 )
-
 
 PAYLOAD = b"\xff" * 32 + b"\x00\x00\x00\xbb\x11\x22\x00\x44" + b"\xaa\x99\x55\x66" + bytes(range(64))
 
@@ -44,7 +44,10 @@ def test_amd_rejects_files_without_padding_or_sync_word(tmp_path):
 
 
 def test_lattice_accepts_only_bin_files(tmp_path):
-    assert BitstreamReader.read_lattice(_write(tmp_path, "design.bin", b"\x7e\xaa\x99\x7e")) == b"\x7e\xaa\x99\x7e"
+    assert (
+        BitstreamReader.read_lattice(_write(tmp_path, "design.bin", b"\x7e\xaa\x99\x7e"))
+        == b"\x7e\xaa\x99\x7e"
+    )
     with pytest.raises(ValueError, match="extension"):
         BitstreamReader.read_lattice(_write(tmp_path, "design.bit", b"\x7e\xaa\x99\x7e"))
 
@@ -72,15 +75,21 @@ def test_read_selects_the_reader_of_the_vendor(tmp_path):
         BitstreamReader.read("xilinx", path)
 
 
-
 class TestBitStreamTranslator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.path_to_template = Path(get_path_to_project("artefact")) / "env5_s15"
         cls.path_to_temp = Path(get_path_to_project("temp_build"))
         if cls.path_to_temp.exists():
             rmtree(cls.path_to_temp)
         cls.path_to_temp.mkdir(parents=True, exist_ok=True)
+
+        cls.path_to_template = cls.path_to_temp / "template"
+        cls.path_to_template.mkdir(parents=True, exist_ok=True)
+        header = b"\x00\x09\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\x00\x00\x01a\x00\x0bTOP_MODULE\x00"
+        payload = bytes(range(256)) * 4
+        (cls.path_to_template / "TOP_MODULE.bit").write_bytes(
+            header + BitstreamReader.AMD_PADDING + BitstreamReader.AMD_SYNC_WORD + payload
+        )
 
     @classmethod
     def tearDownClass(cls):

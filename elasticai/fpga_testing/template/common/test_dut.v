@@ -54,22 +54,5 @@ module TEST_ENVIRONMENT#(
         .DATA_HEAD(head_array[1]),
         .DATA_VALID(rdy_filt[1])
     );    
-        
-    SKELETON_RAM#(
-        .BITWIDTH_IN('d16),
-        .BITWIDTH_SYS(BITWIDTH_DATA),
-        .BITWIDTH_HEAD(BITWIDTH_HEAD)
-    ) DUT_02 (
-        .CLK_SYS(CLK),
-        .RSTN(RSTN),
-		.EN(SEL == 'd2),
-		.RnW(RnW),
-		.ADR(ADR),
-		.TRGG_START_CALC(START_FLAG),
-		.DATA_IN(DATA_IN),
-		.DATA_OUT(dout[2]),
-		.DATA_HEAD(head_array[2]),
-		.RDY(rdy_filt[2])
-    );  
-        
+
 endmodule

@@ -12,7 +12,7 @@ PACKAGE = sg48
 
 # --- Settings for the design
 TOP = TOP_MODULE
-FREQ = 100
+FREQ = 25
 
 SRC_DIR = designs
 include scripts/config.mk

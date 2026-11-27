@@ -24,7 +24,7 @@ module TOP_MODULE#(
 
 	localparam SPI_BITWIDTH = TEST_ENV_CMDS_BITWIDTH + TEST_ENV_ADR_WIDTH + TEST_ENV_DATA_BITWIDTH;
     localparam TEST_HEAD_BITWIDTH = 32;
-	localparam NUM_DUT = 1;
+    localparam integer NUM_DUT = 1;
 
     wire CLK_SYS;
     // --- Using the internal clock
@@ -36,11 +36,15 @@ module TOP_MODULE#(
         .CLKHFEN(1'b1),
         .CLKHF(CLK_SYS_EXT)
     );*/
-    // --- Clock buffer
+    // --- Clock buffer (bypassed in simulation, because the primitive SB_GB is not available)
+`ifdef SIMULATION
+    assign CLK_SYS = CLK_SYS_EXT;
+`else
     SB_GB gb_inst (
         .USER_SIGNAL_TO_GLOBAL_BUFFER(CLK_SYS_EXT),
         .GLOBAL_BUFFER_OUTPUT(CLK_SYS)
     );
+`endif
 
     //Signals for SPI module
     wire spi_mod_rdy;

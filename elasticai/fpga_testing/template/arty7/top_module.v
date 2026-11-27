@@ -1,6 +1,5 @@
 // UART_CNT_BAUDRATE = 216 --> UART_BAUD = 115.200
 module TOP_MODULE#(
-    parameter integer NUM_DUT = 1,
     parameter integer UART_CNT_BAUDRATE = 216,
     parameter integer UART_FIFO_BYTE_SIZE = 3,
     parameter integer TEST_ENV_CMDS_BITWIDTH = 2,
@@ -18,6 +17,7 @@ module TOP_MODULE#(
 );
     localparam TEST_HEAD_BITWIDTH = 32;
     localparam UART_BITWIDTH = 8;
+    localparam integer NUM_DUT = 1;
     
     //Signals for UART module
     wire uart_mod_rdy, uart_mod_start;

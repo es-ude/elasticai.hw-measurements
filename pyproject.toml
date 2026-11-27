@@ -179,6 +179,7 @@ exclude = [
   "oss-cad-suite",
   "elasticai/**/*_tb.py",
   "elasticai/**/*_test.py",
+  "elasticai/**/*_bench.py",
   "elasticai/**/devenv.nix",
   "elasticai/hw_measurements/template/*.py",
   "elasticai/hw_measurements/driver/*.py",

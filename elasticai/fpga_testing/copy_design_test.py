@@ -74,8 +74,8 @@ def test_copy_design_arty7_files_copies_the_cocotb_tests(path) -> None:
 
     files_available = sorted(file.name for file in (path2dst / "tests").iterdir())
     assert files_available == [
+        "arty7_test.py",
         "cocotb_funcs.py",
-        "test_arty7.py",
         "uart_echo_bench.py",
         "uart_led_bench.py",
     ]
@@ -88,9 +88,9 @@ def test_copy_design_env5_files_copies_the_cocotb_tests(path) -> None:
     files_available = sorted(file.name for file in (path2dst / "tests").iterdir())
     assert files_available == [
         "cocotb_funcs.py",
+        "env5_test.py",
         "spi_echo_bench.py",
         "spi_led_bench.py",
-        "test_env5.py",
     ]
 
 
@@ -101,9 +101,9 @@ def test_copy_design_env6mini_files_copies_the_cocotb_tests(path) -> None:
     files_available = sorted(file.name for file in (path2dst / "tests").iterdir())
     assert files_available == [
         "cocotb_funcs.py",
+        "env6_mini_test.py",
         "spi_echo_bench.py",
         "spi_led_bench.py",
-        "test_env6_mini.py",
     ]
 
 
@@ -112,7 +112,7 @@ def test_copy_design_files_copies_the_cocotb_tests_into_given_folder(path) -> No
     path2tests = path / "env5_own_tests_folder"
     copy_design_env5_files(dest=path2dst / "designs", dest_tests=path2tests)
 
-    assert (path2tests / "test_env5.py").is_file()
+    assert (path2tests / "env5_test.py").is_file()
     assert not (path2dst / "tests").exists()
 
 

@@ -58,7 +58,7 @@ For each release of this repo, the CI builds the bitstreams of the three boards 
 The functions `copy_design_arty7_files()`, `copy_design_env5_files()` and `copy_design_env6mini_files()` copy the cocotb tests together with the design files. The tests are written into the folder `tests` next to the design folder (or into the folder given with `dest_tests`):
 - `cocotb_funcs.py`: Generic functions used by all testbenches (clock and reset, building/splitting frames, UART and SPI transmission)
 - `uart_echo_bench.py`, `uart_led_bench.py` (Arty A7) or `spi_echo_bench.py`, `spi_led_bench.py` (ENV5, ENV6.mini): cocotb testbenches (Echo-DUT and LED control). The commands, addresses and bitwidths of the protocol are defined at the top of each testbench, so they can be changed there
-- `test_<board>.py`: pytest runner which simulates all Verilog files of the folder `designs` with each testbench (marker `simulation`)
+- `<board>_test.py`: pytest runner which simulates all Verilog files of the folder `designs` with each testbench (marker `simulation`)
 
 ```python
 from elasticai.fpga_testing import copy_design
@@ -66,7 +66,7 @@ from elasticai.fpga_testing import copy_design
 copy_design.copy_design_env6mini_files()
 ```
 ```bash
-uv run pytest tests/test_env6_mini.py
+uv run pytest tests/env6_mini_test.py
 ```
 The runner uses the marker `simulation` and needs Icarus Verilog.
-The design of the ENV6.mini uses the iCE40 primitive `SB_GB` as clock buffer. It is bypassed in the simulation with the define `SIMULATION` (set by the runner `test_env6_mini.py`).
+The design of the ENV6.mini uses the iCE40 primitive `SB_GB` as clock buffer. It is bypassed in the simulation with the define `SIMULATION` (set by the runner `env6_mini_test.py`).

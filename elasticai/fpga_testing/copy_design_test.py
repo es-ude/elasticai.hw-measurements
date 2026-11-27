@@ -1,4 +1,4 @@
-from shutil import rmtree
+from shutil import copyfile, rmtree
 
 import pytest
 
@@ -114,6 +114,44 @@ def test_copy_design_files_copies_the_cocotb_tests_into_given_folder(path) -> No
 
     assert (path2tests / "env5_test.py").is_file()
     assert not (path2dst / "tests").exists()
+
+
+@pytest.mark.parametrize(
+    "copy_design, device, package",
+    [
+        (copy_design_arty7_files, "AMD", "xc7a100tcsg324-1"),
+        (copy_design_env5_files, "AMD", "xc7s50ftgb196-1"),
+        (copy_design_env6mini_files, "UP5K", "sg48"),
+    ],
+)
+def test_copy_design_files_selects_target_in_makefile(
+    path, copy_design, device: str, package: str
+) -> None:
+    path2project = path / f"makefile_{device}_{package}"
+    path2project.mkdir(parents=True)
+    copyfile(_get_template_path() / "oss_cad" / "Makefile", path2project / "Makefile")
+
+    copy_design(dest=path2project / "designs")
+
+    settings = [
+        line
+        for line in (path2project / "Makefile").read_text().splitlines()
+        if line.startswith("DEVICE") or line.startswith("PACKAGE")
+    ]
+    assert settings == [f"DEVICE = {device}", f"PACKAGE = {package}"]
+
+
+def test_copy_design_files_selects_target_in_given_makefile(path) -> None:
+    path2dst = path / "env6_own_makefile"
+    path2makefile = path / "env6_own_makefile_file" / "Makefile"
+    path2makefile.parent.mkdir(parents=True)
+    copyfile(_get_template_path() / "oss_cad" / "Makefile", path2makefile)
+    path2makefile.write_text(path2makefile.read_text().replace("DEVICE = UP5K", "#DEVICE = UP5K"))
+
+    copy_design_env6mini_files(dest=path2dst / "designs", makefile=path2makefile)
+
+    assert "\nDEVICE = UP5K\n" in path2makefile.read_text()
+    assert not (path2dst / "Makefile").exists()
 
 
 def test_cocotb_benches_use_the_functions_of_cocotb_funcs() -> None:

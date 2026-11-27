@@ -13,7 +13,7 @@
   nextpnr = oxc.nextpnr.overrideAttrs (old: {
     buildInputs =
       (old.buildInputs or [])
-      ++ oxpkgs.lib.optionals oxpkgs.stdenv.isDarwin [oxpkgs.llvmPackages.openmp];
+      ++ oxpkgs.lib.optionals oxpkgs.stdenv.hostPlatform.isDarwin [oxpkgs.llvmPackages.openmp];
   });
   chipdb = oxc.nextpnr-xilinx-chipdb.spartan7.override {inherit nextpnr;};
   pyEnv = oxpkgs.python312.withPackages (ps:
@@ -45,7 +45,7 @@ in {
       oxc.prjxray
       fasm2frames
     ]
-    ++ lib.optionals pkgs.stdenv.isLinux [oxc.fpga-assembler];
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [oxc.fpga-assembler];
 
   env = {
     NEXTPNR_XILINX_DIR = "${nextpnr}";

@@ -4,10 +4,10 @@ PACKAGE = sg48
 # --- Settings for CologneChip GateMate A1
 #DEVICE = CCGM1A1
 # --- Settings for AMD Spartan-7 S50 for ENV5
-#DEVICE = S7
+#DEVICE = AMD
 #PACKAGE = xc7s50ftgb196-1
 # --- Settings for AMD Artix-7 100T for Arty A7
-#DEVICE = S7
+#DEVICE = AMD
 #PACKAGE = xc7a100tcsg324-1
 
 # --- Settings for the design

@@ -21,8 +21,8 @@ We provide a basic structure for testing FPGA designs on
 
 | Board | Function for copying the design | `DEVICE` / `PACKAGE` in the `Makefile` |
 |-------|---------------------------------|-----------------------------------------|
-| Digilent Arty-A7 ([Link](https://digilent.com/reference/programmable-logic/arty-a7/start?srsltid=AfmBOoqeya_KoM1qKi6M-j7AMEs77-xNVkFL-W1l7ACA632gUgNiiGkL)) | `copy_design_arty7_files()` | `S7` / `xc7a100tcsg324-1` |
-| UDE-IES elasticAI.hardware V5 ([Link](https://github.com/es-ude/elastic-ai.hardware/tree/master/v5/revision_2)) | `copy_design_env5_files()` | `S7` / `xc7s50ftgb196-1` |
+| Digilent Arty-A7 ([Link](https://digilent.com/reference/programmable-logic/arty-a7/start?srsltid=AfmBOoqeya_KoM1qKi6M-j7AMEs77-xNVkFL-W1l7ACA632gUgNiiGkL)) | `copy_design_arty7_files()` | `AMD` / `xc7a100tcsg324-1` |
+| UDE-IES elasticAI.hardware V5 ([Link](https://github.com/es-ude/elastic-ai.hardware/tree/master/v5/revision_2)) | `copy_design_env5_files()` | `AMD` / `xc7s50ftgb196-1` |
 | UDE-IES elasticAI.hardware v6 mini ([Link](https://github.com/es-ude/elastic-ai.hardware/tree/master/v6)) | `copy_design_env6mini_files()` | `UP5K` / `sg48` |
 
 ## How to init the project

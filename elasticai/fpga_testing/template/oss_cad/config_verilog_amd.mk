@@ -1,7 +1,7 @@
 .DELETE_ON_ERROR:
 
 ifeq ($(filter xc7%,$(PACKAGE)),)
-$(error PACKAGE must be a Xilinx part for DEVICE=S7, e.g. PACKAGE = xc7s50ftgb196-1 (is: '$(PACKAGE)'))
+$(error PACKAGE must be a Xilinx part for DEVICE=AMD, e.g. PACKAGE = xc7s50ftgb196-1 (is: '$(PACKAGE)'))
 endif
 
 ifneq ($(filter xc7a%,$(PACKAGE)),)

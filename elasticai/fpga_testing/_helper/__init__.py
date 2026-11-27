@@ -5,3 +5,4 @@ from .signal_generator import generate_noise as generate_noise
 from .signal_generator import generate_sinusoidal_waveform as generate_sinusoidal_waveform
 from .structure import copy_oss_cad_scripts as copy_oss_cad_scripts
 from .structure import init_project_folder as init_project_folder
+from .structure import set_makefile_target as set_makefile_target

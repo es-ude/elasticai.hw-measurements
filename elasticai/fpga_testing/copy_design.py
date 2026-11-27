@@ -4,6 +4,7 @@ from shutil import copyfile, copytree
 
 import elasticai.fpga_testing as dut
 from elasticai.fpga_testing import get_path_to_project
+from elasticai.fpga_testing._helper.structure import set_makefile_target
 
 
 def _get_template_path() -> Path:
@@ -23,6 +24,14 @@ def _copy_cocotb_files(board: str, interface: str, dest_tests: Path) -> None:
     copyfile(src=path2cocotb / f"{board}_runner.py", dst=dest_tests / f"{board}_test.py")
 
 
+def _select_target_in_makefile(
+    makefile: Path | None, dest: Path, device: str, package: str | None
+) -> None:
+    path2makefile = makefile if makefile is not None else dest.parent / "Makefile"
+    if path2makefile.is_file():
+        set_makefile_target(path2makefile, device=device, package=package)
+
+
 def _copy_design_files(src_device: Path, src_common: Path, dest: Path) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     if not src_common == Path("."):
@@ -31,11 +40,15 @@ def _copy_design_files(src_device: Path, src_common: Path, dest: Path) -> None:
         copytree(src=src_device, dst=dest, dirs_exist_ok=True)
 
 
-def copy_design_arty7_files(dest: Path = _get_basic_path(), dest_tests: Path | None = None) -> None:
+def copy_design_arty7_files(
+    dest: Path = _get_basic_path(), dest_tests: Path | None = None, makefile: Path | None = None
+) -> None:
     """Function for copying the design files and the cocotb tests to test structures on FPGA (here: DevBoard Digilent Arty A7)
     :param dest:        Path with destination folder to copy all design files into
     :param dest_tests:  Path with destination folder to copy the cocotb tests (testbenches, runner `arty7_test.py` and `cocotb_funcs.py`) into
                         [Default: folder `tests` next to the destination folder of the design files]
+    :param makefile:    Path to the Makefile, in which DEVICE and PACKAGE of the board are selected
+                        [Default: file `Makefile` next to the destination folder of the design files, skipped if it does not exist]
     :return:            None
     """
     path2device = _get_template_path() / "arty7"
@@ -50,13 +63,18 @@ def copy_design_arty7_files(dest: Path = _get_basic_path(), dest_tests: Path | N
         interface="uart",
         dest_tests=dest_tests if dest_tests is not None else dest.parent / "tests",
     )
+    _select_target_in_makefile(makefile=makefile, dest=dest, device="AMD", package="xc7a100tcsg324-1")
 
 
-def copy_design_env5_files(dest: Path = _get_basic_path(), dest_tests: Path | None = None) -> None:
+def copy_design_env5_files(
+    dest: Path = _get_basic_path(), dest_tests: Path | None = None, makefile: Path | None = None
+) -> None:
     """Function for copying the design files and the cocotb tests to test structures on FPGA (here: elasticAI.env5)
     :param dest:        Path with destination folder to copy all design files into
     :param dest_tests:  Path with destination folder to copy the cocotb tests (testbenches, runner `env5_test.py` and `cocotb_funcs.py`) into
                         [Default: folder `tests` next to the destination folder of the design files]
+    :param makefile:    Path to the Makefile, in which DEVICE and PACKAGE of the board are selected
+                        [Default: file `Makefile` next to the destination folder of the design files, skipped if it does not exist]
     :return:            None
     """
     path2device = _get_template_path() / "env5"
@@ -71,13 +89,18 @@ def copy_design_env5_files(dest: Path = _get_basic_path(), dest_tests: Path | No
         interface="spi",
         dest_tests=dest_tests if dest_tests is not None else dest.parent / "tests",
     )
+    _select_target_in_makefile(makefile=makefile, dest=dest, device="AMD", package="xc7s50ftgb196-1")
 
 
-def copy_design_env6mini_files(dest: Path = _get_basic_path(), dest_tests: Path | None = None) -> None:
+def copy_design_env6mini_files(
+    dest: Path = _get_basic_path(), dest_tests: Path | None = None, makefile: Path | None = None
+) -> None:
     """Function for copying the design files and the cocotb tests to test structures on FPGA (here: elasticAI.env6-mini)
     :param dest:        Path with destination folder to copy all design files into
     :param dest_tests:  Path with destination folder to copy the cocotb tests (testbenches, runner `env6_mini_test.py` and `cocotb_funcs.py`) into
                         [Default: folder `tests` next to the destination folder of the design files]
+    :param makefile:    Path to the Makefile, in which DEVICE and PACKAGE of the board are selected
+                        [Default: file `Makefile` next to the destination folder of the design files, skipped if it does not exist]
     :return:            None
     """
     path2device = _get_template_path() / "env6_mini"
@@ -92,6 +115,7 @@ def copy_design_env6mini_files(dest: Path = _get_basic_path(), dest_tests: Path 
         interface="spi",
         dest_tests=dest_tests if dest_tests is not None else dest.parent / "tests",
     )
+    _select_target_in_makefile(makefile=makefile, dest=dest, device="UP5K", package="sg48")
 
 
 class TargetsSkeleton(Enum):

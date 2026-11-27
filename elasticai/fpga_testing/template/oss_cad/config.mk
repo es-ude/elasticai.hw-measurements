@@ -2,7 +2,7 @@ PRJ_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 SRC_ROOT := $(PRJ_ROOT)/$(SRC_DIR)
 SCRIPTS_ROOT := $(PRJ_ROOT)/scripts
 BUILD_OUT := $(PRJ_ROOT)/build
-ifeq ($(DEVICE),S7)
+ifeq ($(DEVICE),AMD)
     BITEXT := bit
 else
     BITEXT := bin
@@ -51,8 +51,8 @@ ifeq ($(DEVICE),UP5K)
     include $(SCRIPTS_ROOT)/config_verilog_up5k.mk
 else ifeq ($(DEVICE),CCGM1A1)
     include $(SCRIPTS_ROOT)/config_verilog_ccgm1a1.mk
-else ifeq ($(DEVICE),S7)
-    include $(SCRIPTS_ROOT)/config_verilog_s7.mk
+else ifeq ($(DEVICE),AMD)
+    include $(SCRIPTS_ROOT)/config_verilog_amd.mk
 else
 	$(error Unsupported device: $(DEVICE))
 endif

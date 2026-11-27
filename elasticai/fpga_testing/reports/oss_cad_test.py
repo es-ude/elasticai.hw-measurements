@@ -13,10 +13,44 @@ from .oss_cad import (
     copy_osscad_implementation_results,
 )
 
+TIMING_REPORT = """Total number of logic levels: 3
+Total path delay: 17.00 ns (58.82 MHz)
+"""
+
+UTILIZATION_ENTRIES = {
+    "ICESTORM_LC": (162, 5280),
+    "ICESTORM_RAM": (0, 30),
+    "SB_IO": (8, 96),
+    "SB_GB": (4, 8),
+    "ICESTORM_PLL": (0, 1),
+    "SB_WARMBOOT": (0, 1),
+    "ICESTORM_DSP": (0, 8),
+    "ICESTORM_HFOSC": (0, 1),
+    "ICESTORM_LFOSC": (0, 1),
+    "SB_I2C": (0, 2),
+    "SB_SPI": (0, 2),
+    "IO_I3C": (0, 2),
+    "SB_LEDDA_IP": (0, 1),
+    "SB_RGBA_DRV": (0, 1),
+    "ICESTORM_SPRAM": (0, 4),
+}
+
+
+def _utilization_report() -> str:
+    lines = ["Info: Device utilisation:"]
+    for name, (used, available) in UTILIZATION_ENTRIES.items():
+        lines.append(f"Info: \t{name:>16}: {used:>5}/{available:>5} {int(100 * used / available):>3}%")
+    return "\n".join(lines) + "\n\nInfo: Placed 8 cells based on constraints.\n"
+
 
 @pytest.fixture(autouse=True)
-def osscad_path():
-    path = get_path_to_project("artefact") / "env6_mini"
+def osscad_path(tmp_path: Path):
+    path = tmp_path / "env6_mini"
+    path.mkdir()
+    (path / "TOP_MODULE.bin").write_bytes(bytes(range(64)))
+    (path / "TOP_MODULE_timing.rpt").write_text(TIMING_REPORT)
+    (path / "TOP_MODULE_util_impl.rpt").write_text(_utilization_report())
+    (path / "TOP_MODULE_util_sync.rpt").write_text("=== TOP_MODULE ===\n")
     yield path
 
 

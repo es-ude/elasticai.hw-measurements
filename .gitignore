@@ -21,7 +21,8 @@ elasticai/__init__.py
 **/.devenv.flake.nix
 **/oss-cad-suite
 **/.envrc
-designs
-scripts
-tests
-Makefile
+/designs
+/scripts
+/tests
+/Makefile
+/fpga.nix

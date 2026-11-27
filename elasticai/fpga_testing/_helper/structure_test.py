@@ -3,6 +3,7 @@ from shutil import rmtree
 
 import pytest
 
+import elasticai.fpga_testing as fpga_testing
 from elasticai.fpga_testing import get_path_to_project
 
 from .structure import copy_oss_cad_scripts, init_project_folder
@@ -27,7 +28,12 @@ def test_init_project_folder(path: Path) -> None:
 
 
 def test_copy_scripts_init(path: Path) -> None:
-    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_s7.mk", "config_verilog_up5k.mk"]
+    check_scripts = [
+        "config.mk",
+        "config_verilog_ccgm1a1.mk",
+        "config_verilog_s7.mk",
+        "config_verilog_up5k.mk",
+    ]
     check_scripts.sort()
     check_main = ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]
     check_main.sort()
@@ -45,7 +51,12 @@ def test_copy_scripts_init(path: Path) -> None:
 
 
 def test_copy_scripts_reinit(path: Path) -> None:
-    check_scripts = ["config.mk", "config_verilog_ccgm1a1.mk", "config_verilog_s7.mk", "config_verilog_up5k.mk"]
+    check_scripts = [
+        "config.mk",
+        "config_verilog_ccgm1a1.mk",
+        "config_verilog_s7.mk",
+        "config_verilog_up5k.mk",
+    ]
     check_scripts.sort()
     check_main = ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]
     check_main.sort()
@@ -72,7 +83,32 @@ def test_copy_scripts_reinit(path: Path) -> None:
     assert files_main == check_main
 
     for key in files_timestamp_init.keys():
-        if key in ["devenv.nix", "devenv.yaml"]:
+        if key in ["Makefile", "fpga.nix", "devenv.nix", "devenv.yaml"]:
             assert files_timestamp_init[key] == files_timestamp_reinit[key]
         else:
             assert files_timestamp_init[key] < files_timestamp_reinit[key]
+
+
+def test_copy_scripts_keeps_existing_main_files(path: Path) -> None:
+    init_project_folder(new_folder="temp_main")
+    copy_oss_cad_scripts(dst=path)
+    (path / "Makefile").write_text("DEVICE = CCGM1A1\n")
+    (path / "fpga.nix").write_text("{ }\n")
+
+    copy_oss_cad_scripts(dst=path)
+
+    assert (path / "Makefile").read_text() == "DEVICE = CCGM1A1\n"
+    assert (path / "fpga.nix").read_text() == "{ }\n"
+
+
+def test_copy_scripts_copies_missing_main_files(path: Path) -> None:
+    path_template = Path(fpga_testing.__file__).parent / "template" / "oss_cad"
+    init_project_folder(new_folder="temp_main")
+    copy_oss_cad_scripts(dst=path)
+    (path / "Makefile").unlink()
+    (path / "fpga.nix").unlink()
+
+    copy_oss_cad_scripts(dst=path)
+
+    for file_name in ["Makefile", "fpga.nix"]:
+        assert (path / file_name).read_bytes() == (path_template / file_name).read_bytes()

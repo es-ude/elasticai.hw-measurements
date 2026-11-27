@@ -40,6 +40,16 @@ module TEST_ENVIRONMENT#(
     assign head_array[0] = {4'd0, 6'd0, 6'd1, 5'd0, BITWIDTH_DATA[4:0]};
     assign rdy_filt[0] = 1'd0; 
 
+    // Unused DUT slots (SEL > 1) are tied to constant values
+    genvar idx_dut;
+    generate
+        for(idx_dut = 'd2; idx_dut <= NUM_DUT; idx_dut = idx_dut + 'd1) begin : UNUSED_DUT
+            assign dout[idx_dut] = 'd0;
+            assign head_array[idx_dut] = 'd0;
+            assign rdy_filt[idx_dut] = 1'd0;
+        end
+    endgenerate
+
     //################## List with DUT ################## 
     SKELETON_ECHO#(
         .BITWIDTH_SYS(BITWIDTH_DATA),

@@ -82,7 +82,7 @@ in {
     };
     "package:build" = {
       exec = ''
-        ${uv_bin} bild
+        ${uv_bin} build
       '';
     };
     "docs:check" = {

@@ -1,0 +1,110 @@
+name: Bitstream
+
+on:
+  workflow_call:
+    inputs:
+      upload:
+        description: "Upload the bitstreams to the GitHub release"
+        type: boolean
+        default: false
+
+env:
+  TAG: ${{ github.event.release.tag_name || 'dev' }}
+
+jobs:
+  ice40:
+    name: Bitstream env6_mini
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: ./.github/actions/setup-uv
+
+      - name: Setup the OSS CAD Suite
+        uses: ./.github/actions/setup-oss-cad
+
+      - name: Prepare the project of the board
+        run: uv run python .github/ci/prepare_bitstream_project.py env6_mini build_bitstream/env6_mini
+
+      - name: Build the bitstream
+        run: make -C build_bitstream/env6_mini DEVICE=UP5K PACKAGE=sg48 bitstream
+
+      - name: Name the bitstream
+        run: |
+          mkdir -p dist_bitstream
+          cp build_bitstream/env6_mini/build/TOP_MODULE.bin "dist_bitstream/bitstream-env6_mini-${TAG}.bin"
+
+      - name: Upload the bitstream to the release
+        if: inputs.upload
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist_bitstream/*
+
+  amd:
+    name: Bitstreams env5 and arty7
+    runs-on: ubuntu-latest
+    env:
+      SKIP_OSS_CAD_CHECK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: ./.github/actions/setup-uv
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+            keep-outputs = true
+            keep-env-derivations = true
+
+      - name: Cache the Nix store
+        uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('devenv.nix', 'devenv.yaml', 'devenv.lock', 'elasticai/fpga_testing/template/oss_cad/*.nix') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          gc-max-store-size-linux: 5G
+
+      - name: Install devenv
+        run: nix profile install nixpkgs#devenv
+
+      - name: Setup the OSS CAD Suite (provides yosys)
+        uses: ./.github/actions/setup-oss-cad
+
+      - name: Prepare the projects of the boards
+        run: |
+          uv run python .github/ci/prepare_bitstream_project.py env5 build_bitstream/env5
+          uv run python .github/ci/prepare_bitstream_project.py arty7 build_bitstream/arty7
+
+      - name: Cache the chip database of the Arty A7
+        uses: actions/cache@v4
+        with:
+          path: build_bitstream/arty7/chipdb
+          key: chipdb-xc7a100tcsg324-1-${{ hashFiles('elasticai/fpga_testing/template/oss_cad/config_verilog_amd.mk', 'devenv.lock') }}
+
+      - name: Build the bitstreams
+        run: |
+          devenv shell -- bash -euo pipefail -c '
+            make -C build_bitstream/env5 DEVICE=AMD PACKAGE=xc7s50ftgb196-1 bitstream
+            make -C build_bitstream/arty7 DEVICE=AMD PACKAGE=xc7a100tcsg324-1 CHIPDB_DIR=$PWD/build_bitstream/arty7/chipdb bitstream
+          '
+
+      - name: Name the bitstreams
+        run: |
+          mkdir -p dist_bitstream
+          for board in env5 arty7; do
+            cp "build_bitstream/${board}/build/TOP_MODULE.bit" "dist_bitstream/bitstream-${board}-${TAG}.bit"
+          done
+
+      - name: Upload the bitstreams to the release
+        if: inputs.upload
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist_bitstream/*

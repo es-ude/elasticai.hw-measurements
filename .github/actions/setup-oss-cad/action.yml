@@ -1,0 +1,49 @@
+name: "Setup OSS CAD Suite"
+description: "Provides the OSS CAD Suite (yosys, nextpnr-ice40, icestorm) from the cache and downloads it only on a cache miss"
+
+inputs:
+  version:
+    description: "Release tag of the OSS CAD Suite. Default: the tag in .github/ci/oss_cad_version.txt, otherwise the latest release"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Resolve the release of the OSS CAD Suite
+      id: release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REQUESTED: ${{ inputs.version }}
+      run: |
+        tag="$REQUESTED"
+        if [ -z "$tag" ] && [ -f .github/ci/oss_cad_version.txt ]; then
+          tag=$(tr -d '[:space:]' < .github/ci/oss_cad_version.txt)
+        fi
+        if [ -z "$tag" ]; then
+          tag=$(gh api repos/YosysHQ/oss-cad-suite-build/releases/latest --jq .tag_name)
+        fi
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        echo "file=oss-cad-suite-linux-x64-${tag//-/}.tgz" >> "$GITHUB_OUTPUT"
+
+    - name: Restore the OSS CAD Suite from the cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ~/oss-cad-suite
+        key: oss-cad-suite-linux-x64-${{ steps.release.outputs.tag }}
+
+    - name: Download the OSS CAD Suite (cache miss)
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        TAG: ${{ steps.release.outputs.tag }}
+        FILE: ${{ steps.release.outputs.file }}
+      run: |
+        cd "$HOME"
+        curl -fsSL "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${TAG}/${FILE}" | tar xz
+
+    - name: Add the OSS CAD Suite to the PATH
+      shell: bash
+      run: echo "$HOME/oss-cad-suite/bin" >> "$GITHUB_PATH"

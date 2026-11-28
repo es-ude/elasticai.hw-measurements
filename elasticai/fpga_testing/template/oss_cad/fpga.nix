@@ -78,6 +78,9 @@ in {
     };
     check_oss_cad_available = {
       exec = ''
+        if [[ -n "$SKIP_OSS_CAD_CHECK" ]]; then
+            exit 0
+        fi
         if [[ -e $DEVENV_ROOT/oss-cad-suite/VERSION ]]; then
             LATEST=$(get_latest_oss_cad_suite_release | tr -d "-")
             CURRENT=$(cat $DEVENV_ROOT/oss-cad-suite/VERSION)
